@@ -76,8 +76,14 @@ th{color:var(--mu);font-weight:600;font-size:12px}.wrap{overflow-x:auto}
 .lg select,.lg input{width:100%;margin-top:10px;padding:13px;font-size:16px;background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.18)}
 .lg option{color:#14181f}.lg input::placeholder{color:#64748b}
 .lg hr{border:0;border-top:1px solid rgba(255,255,255,.12);margin:22px 0 4px}
+/* tesoura cortando: lâminas giram em torno do eixo e fecham 3 vezes */
+.sa,.sb{transform-box:view-box;transform-origin:13.4px 12px}
+.sa{--s:1}.sb{--s:-1}
+.tile .sa,.tile .sb{animation:sn 1.4s ease-in-out .6s both}
+.brand i:hover .sa,.brand i:hover .sb{animation:sn 1.4s ease-in-out}
+@keyframes sn{0%,100%{transform:rotate(0)}14%{transform:rotate(calc(var(--s)*-28deg))}30%{transform:rotate(calc(var(--s)*9deg))}46%{transform:rotate(calc(var(--s)*-28deg))}62%{transform:rotate(calc(var(--s)*9deg))}78%{transform:rotate(calc(var(--s)*-28deg))}}
 @keyframes pop{0%{transform:scale(.6) rotate(-12deg);opacity:0}100%{transform:none;opacity:1}}
-@media (prefers-reduced-motion:reduce){.tile{animation:none}}
+@media (prefers-reduced-motion:reduce){.tile,.tile .sa,.tile .sb{animation:none!important}}
 @media (max-width:760px){
 .app{flex-direction:column-reverse}
 nav{width:auto;flex-direction:row;padding:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));justify-content:space-around;gap:0}
@@ -116,6 +122,8 @@ tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.2"/>',
 chart:'<path d="M4 20V11M10 20V4M16 20v-8M22 20H2"/>',
 out:'<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>',
 face:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>'};
+const CUT=s=>`<svg viewBox="0 0 24 24" style="width:${s}px;height:${s}px;overflow:visible"><g class="sb"><circle cx="6" cy="18" r="3"/><path d="M8.6 16.4L20 6"/></g><g class="sa"><circle cx="6" cy="6" r="3"/><path d="M8.6 7.6L20 18"/></g></svg>`;
+const snip=t=>t.querySelectorAll('.sa,.sb').forEach(x=>{x.style.animation='none';x.getBoundingClientRect();x.style.animation='sn 1.4s ease-in-out both'});
 const ic=(n,s=20)=>`<svg viewBox="0 0 24 24" style="width:${s}px;height:${s}px">${I[n]}</svg>`;
 
 /* ===== Estado ===== */
@@ -226,7 +234,7 @@ const ND=[['painel','Visão geral','home'],['agenda','Agenda','cal'],['barb','Ba
 const NB=[['painel','Meu dia','home'],['agenda','Agenda','cal'],['cli','Clientes','face']];
 const NC=[['agendar','Agendar','cut'],['meus','Meus horários','cal']];
 function login(){const o=(l)=>l.map(x=>`<option value="${x.id}">${esc(x.nome)}</option>`).join('');
- return`<div class="lg"><div class="box"><div class="tile" style="color:#fff">${ic('cut',50)}</div><h2>FADE</h2><p>Agenda, cortes e mensalidade da sua barbearia</p>
+ return`<div class="lg"><div class="box"><div class="tile" style="color:#fff;cursor:pointer" onclick="snip(this)" title="Toque para cortar">${CUT(50)}</div><h2>FADE</h2><p>Agenda, cortes e mensalidade da sua barbearia</p>
  <input id="le" type="email" placeholder="E-mail" autocomplete="username"><input id="lp" type="password" placeholder="Senha" autocomplete="current-password">
  <button class="btn" onclick="toast('O login real entra quando o Supabase for conectado')">Entrar</button>
  <hr><p style="margin:14px 0 0">Modo demonstração</p>
@@ -234,7 +242,7 @@ function login(){const o=(l)=>l.map(x=>`<option value="${x.id}">${esc(x.nome)}</
  <select id="db">${o(S.barb)}</select><button class="btn o" onclick="entrar('barb',$('#db').value)">Entrar como barbeiro</button>
  <select id="dc">${o(S.cli)}</select><button class="btn o" onclick="entrar('cli',$('#dc').value)">Entrar como cliente</button></div></div>`}
 function shell(items,body){const u=V.role=='dono'?'Dono':V.role=='barb'?bn(V.uid).nome:cn(V.uid).nome,rl={dono:'Barbearia',barb:'Barbeiro',cli:'Cliente'}[V.role];
- return`<div class="app"><nav><div class="brand"><i style="color:#fff">${ic('cut',18)}</i>FADE</div><div class="lb">${rl}</div>
+ return`<div class="app"><nav><div class="brand"><i style="color:#fff">${CUT(18)}</i>FADE</div><div class="lb">${rl}</div>
  ${items.map(i=>`<button class="${V.tab==i[0]?'on':''}" onclick="go('${i[0]}')">${ic(i[2])}<span>${i[1]}</span></button>`).join('')}
  <div class="sp"></div><div class="usr"><b>${esc(u[0])}</b><div>${esc(u.split(' ')[0])}<small>${rl}</small></div></div>
  <button class="lgo" onclick="sair()">${ic('out',18)}<span>Sair</span></button></nav><main>${body}</main></div>`}
