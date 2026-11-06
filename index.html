@@ -91,7 +91,7 @@ th{color:var(--mu);font-weight:600;font-size:12px}.wrap{overflow-x:auto}
 @keyframes ld{to{width:100%}}
 .pgw{height:100dvh;overflow:auto}
 .pg{max-width:560px;margin:0 auto;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
-.brandp{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.08em;margin:4px 0 16px}
+.brandp{font-size:18px;display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.08em;margin:4px 0 16px}
 .brandp i{overflow:hidden;width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center}
 @keyframes sn{0%,100%{transform:rotate(0)}14%{transform:rotate(calc(var(--s)*-28deg))}30%{transform:rotate(calc(var(--s)*9deg))}46%{transform:rotate(calc(var(--s)*-28deg))}62%{transform:rotate(calc(var(--s)*9deg))}78%{transform:rotate(calc(var(--s)*-28deg))}}
 @keyframes pop{0%{transform:scale(.6) rotate(-12deg);opacity:0}100%{transform:none;opacity:1}}
@@ -151,7 +151,7 @@ async function esqueci(){const e=$('#le').value.trim();if(!sb||!e)return toast('
 /* Página pública: tudo passa pela Edge Function agenda-publica (sem login) */
 async function api(a,d){const{data,error}=await sb.functions.invoke('agenda-publica',{body:{a,...d}});
  if(error){let m=error.message;try{m=(await error.context.json()).erro||m}catch(e){}throw new Error(m)}return data}
-async function loadPub(){if(!sb)throw new Error('Sem conexão com o servidor');const i=await api('info',{shop:V.shop});V.pubCfg={cor:i.cor||'',logo:i.logo||'',boas:i.boas||'',tema:'auto'};S.nome=i.nome;S.barb=i.barbeiros;S.serv=i.servicos;S.ag=i.ocupados}
+async function loadPub(){if(!sb)throw new Error('Sem conexão com o servidor');const i=await api('info',{shop:V.shop});V.pubCfg={cor:i.cor||'',logo:i.logo||'',boas:i.boas||'',tema:'auto'};S.nome=i.nome||'FADE';document.title=S.nome+' · Agendamento';S.barb=i.barbeiros;S.serv=i.servicos;S.ag=i.ocupados}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const DAYS=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],DS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
@@ -228,7 +228,7 @@ const opt=(l,n='nome')=>l.map(x=>[x.id,x[n]]);
 /* ===== Ações ===== */
 const nid=()=>S.nid=Math.max(S.nid+1,Date.now()*1000+Math.floor(Math.random()*999));
 function novoBarb(){form('Novo barbeiro',[{id:'n',l:'Nome'},{id:'t',l:'WhatsApp com DDD'}],v=>{if(!v.n)return toast('Informe o nome')&&false;S.barb.push({id:nid(),nome:v.n,tel:v.t});toast('Barbeiro cadastrado')})}
-function novoCli(){form('Novo cliente',[{id:'n',l:'Nome completo'},{id:'t',l:'Celular com DDD'},{id:'f',l:'CPF (opcional)'},{id:'p',l:'Mensalidade',o:[['','Avulso (sem plano)'],...opt(S.plan)]}],v=>{if(!v.n)return toast('Informe o nome')&&false;if(v.f&&!cpfOk(v.f))return toast('CPF inválido')&&false;S.cli.push({id:nid(),nome:v.n,tel:dg(v.t),cpf:dg(v.f),plano:v.p?+v.p:null,venc:v.p?K(D(30)):''});if(v.p)S.pg.push({id:nid(),cli:S.nid,valor:pn(+v.p).preco,data:K(D(0))});toast('Cliente cadastrado')})}
+function novoCli(){form('Novo cliente',[{id:'n',l:'Nome completo'},{id:'t',l:'Celular com DDD'},{id:'f',l:'CPF (opcional)'},{id:'p',l:'Mensalidade',o:[['','Avulso (sem plano)'],...opt(S.plan)]}],v=>{if(!v.n)return toast('Informe o nome')&&false;if(v.f&&!cpfOk(v.f))return toast('CPF inválido')&&false;const cid=nid();S.cli.push({id:cid,nome:v.n,tel:dg(v.t),cpf:dg(v.f),plano:v.p?+v.p:null,venc:v.p?K(D(30)):''});if(v.p)S.pg.push({id:nid(),cli:cid,valor:pn(+v.p).preco,data:K(D(0))});toast('Cliente cadastrado')})}
 function novoServ(){form('Novo corte / serviço',[{id:'n',l:'Nome (ex.: Corte social)'},{id:'p',l:'Preço (R$)',ty:'number'},{id:'d',l:'Duração',o:[[30,'30 min'],[60,'1 hora'],[90,'1h30']]}],v=>{if(!v.n||!(+v.p>=0)||v.p==='')return toast('Informe nome e preço')&&false;S.serv.push({id:nid(),nome:v.n,preco:+v.p,dur:+v.d});toast('Serviço adicionado')})}
 function novoPlan(){form('Novo plano de mensalidade',[{id:'n',l:'Nome do plano'},{id:'p',l:'Valor mensal (R$)',ty:'number'},{id:'d',l:'Descrição'}],v=>{if(!v.n||!(+v.p>0))return toast('Informe nome e valor')&&false;S.plan.push({id:nid(),nome:v.n,preco:+v.p,descr:v.d});toast('Plano criado')})}
 function remover(l,id,nome){conf('Remover '+nome+'?','Essa ação não pode ser desfeita.',()=>{S[l]=S[l].filter(x=>x.id!=id);toast('Removido')})}
@@ -247,9 +247,10 @@ async function confirmarBk(){const b=V.bk,t=dg(b.tel),cp=dg(b.cpf);
  if(b.cpf&&!cpfOk(cp))return toast('CPF inválido');
  if(!b.found&&(b.nome||'').trim().length<2)return toast('Informe o seu nome');
  try{const r=await api('agendar',{shop:V.shop,serv:b.serv,barb:b.barb,data:K(D(b.dia??0)),hora:b.hora,tel:t,cpf:cp,nome:(b.nome||'').trim()});
-  V.bk={barb:V.fixB||undefined,done:r.ag};render();$('.pgw')?.scrollTo?.(0,0);loadPub().then(()=>{})}
+  V.bk={...bk0(),done:r.ag};render();$('.pgw')?.scrollTo?.(0,0);loadPub().then(()=>{})}
  catch(e){toast(e.message);if(/ocupado|passou|indispon/i.test(e.message)){V.bk.hora=null;loadPub().then(render).catch(()=>{})}}}
-const go=t=>{V.tab=t;V.draft=null;render()};
+const bk0=()=>({barb:V.fixB||(S.barb.length==1?S.barb[0].id:undefined)});
+const go=t=>{V.tab=t;V.draft=null;render();const m=$('main');if(m)m.scrollTop=0};
 const sair=()=>sb.auth.signOut();
 const entrar=(r,id)=>{V.role=r;V.uid=+id||0;const h=location.hash.slice(1),ok=({dono:ND,barb:NB}[r]).some(i=>i[0]==h);V.tab=ok?h:{dono:'painel',barb:'painel'}[r];V.dia=0;V.bk={};render()};
 
@@ -321,12 +322,12 @@ rel(){const w=[0,0,0,0,0,0,0],q={};let tot=0;S.ag.filter(a=>a.st=='ok'&&a.data>=
 
 /* ===== Página pública de agendamento (link enviado aos clientes, sem login) ===== */
 function pub(){if(V.pubLoad)return'<div class="pgw"><div class="pg"><p class="hint">Carregando…</p></div></div>';if(V.pubErr)return`<div class="pgw"><div class="pg"><div class="card"><h3>Não foi possível abrir o agendamento</h3><p class="hint" style="margin:0">${esc(V.pubErr)}</p></div></div></div>`;const b=V.bk,k=K(D(b.dia??0)),s=b.serv&&sv(b.serv),a=b.done,hd=`<div class="brandp"><i style="color:#fff">${ico(V.pubCfg||{},18)}</i>${esc(S.nome)}</div>`,n=V.fixB?1:0;
- if(a)return`<div class="pgw"><div class="pg">${hd}<div class="card" style="text-align:center"><span class="tag" style="font-size:13px;padding:4px 14px">Horário confirmado</span><h1 style="margin:14px 0 6px">${DAYS[new Date(a.data+'T00:00').getDay()]}, ${fd(a.data)} às ${a.hora}</h1><p class="hint">${esc(sv(a.serv).nome)} com ${esc(bn(a.barb).nome)}</p><a class="btn p g" target="_blank" rel="noopener" href="${waUrl(bn(a.barb).tel,'Olá! Agendei '+sv(a.serv).nome+' para '+fd(a.data)+' às '+a.hora+'.')}">Avisar o barbeiro no WhatsApp</a><button class="btn g" style="margin-top:8px" onclick="V.bk={barb:V.fixB||undefined};render()">Agendar outro horário</button></div></div></div>`;
+ if(a)return`<div class="pgw"><div class="pg">${hd}<div class="card" style="text-align:center"><span class="tag" style="font-size:13px;padding:4px 14px">Horário confirmado</span><h1 style="margin:14px 0 6px">${DAYS[new Date(a.data+'T00:00').getDay()]}, ${fd(a.data)} às ${a.hora}</h1><p class="hint">${esc(sv(a.serv).nome)} com ${esc(bn(a.barb).nome)}</p><a class="btn p g" target="_blank" rel="noopener" href="${waUrl(bn(a.barb).tel,'Olá! Agendei '+sv(a.serv).nome+' para '+fd(a.data)+' às '+a.hora+'.')}">Avisar o barbeiro no WhatsApp</a><button class="btn g" style="margin-top:8px" onclick="V.bk=bk0();render()">Agendar outro horário</button></div></div></div>`;
  return`<div class="pgw"><div class="pg">${hd}<h1 style="margin-bottom:4px">Agende seu horário</h1><p class="hint">${V.pubCfg?.boas?esc(V.pubCfg.boas)+' ':''}${V.fixB?'Com '+esc(bn(V.fixB).nome)+'. ':''}Escolha o serviço, o dia e um horário livre.</p>
  <div class="card"><h3>1. Serviço</h3><div class="chips">${S.serv.map(x=>`<button class="chip ${b.serv==x.id?'on':''}" onclick="bk('serv',${x.id})">${esc(x.nome)} · ${brl(x.preco)}</button>`).join('')}</div>
  ${V.fixB?'':`<h3>2. Barbeiro</h3><div class="chips">${S.barb.map(x=>`<button class="chip ${b.barb==x.id?'on':''}" onclick="bk('barb',${x.id})">${esc(x.nome)}</button>`).join('')}</div>`}
  <h3>${2+(1-n)}. Dia</h3><div class="chips">${[...Array(14).keys()].map(i=>`<button class="chip ${(b.dia??0)==i?'on':''}" onclick="bk('dia',${i})">${i==0?'Hoje':DS[D(i).getDay()]+' '+fd(K(D(i)))}</button>`).join('')}</div>
- <h3>${3+(1-n)}. Horário</h3>${s&&b.barb?`<div class="chips">${SL.filter(h=>free(b.barb,k,h,s.dur)).map(h=>`<button class="chip ${b.hora==h?'on':''}" onclick="bk('hora','${h}')">${h}</button>`).join('')||'<span class="hint">Sem horários livres neste dia. Tente outro dia.</span>'}</div>`:'<p class="hint">Escolha o serviço'+(V.fixB?'':' e o barbeiro')+' para ver os horários livres.</p>'}
+ <h3>${3+(1-n)}. Horário</h3>${s&&b.barb?`<div class="chips">${SL.filter(h=>free(b.barb,k,h,s.dur)).map(h=>`<button class="chip ${b.hora==h?'on':''}" onclick="bk('hora','${h}')">${h}</button>`).join('')||'<span class="hint">Sem horários livres neste dia. Tente outro dia.</span>'}</div>`:'<p class="hint">Escolha '+[!s&&'o serviço',!b.barb&&'o barbeiro'].filter(Boolean).join(' e ')+' para ver os horários livres.</p>'}
  <h3>Seus dados</h3><p class="hint">Informe o celular ou o CPF: se você já é cliente, encontramos o seu cadastro.</p>
  <label class="fl"><small>Celular com DDD</small><input type="tel" inputmode="tel" autocomplete="tel" placeholder="(81) 98888-7777" value="${esc(b.tel||'')}" oninput="this.value=V.bk.tel=mTel(this.value);lookup()"></label>
  <label class="fl"><small>CPF</small><input inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" value="${esc(b.cpf||'')}" oninput="this.value=V.bk.cpf=mCpf(this.value);lookup()"></label>
@@ -348,11 +349,13 @@ function shell(items,body){const u=V.role=='dono'?'Dono':bn(V.uid).nome,rl={dono
  ${items.map(i=>`<button class="${V.tab==i[0]?'on':''}" onclick="go('${i[0]}')">${ic(i[2])}${i[3]?`<span class="dsk">${i[1]}</span><span class="mob">${i[3]}</span>`:`<span>${i[1]}</span>`}</button>`).join('')}
  <div class="sp"></div><div class="usr"><b>${esc(u[0])}</b><div>${esc(u.split(' ')[0])}<small>${rl}</small></div></div>
  <button class="lgo" onclick="sair()">${ic('out',18)}<span>Sair</span></button></nav><main>${body}</main></div>`}
-function render(){applyTheme(V.role=='pub'?(V.pubCfg||{}):V.role?S.cfg:{});const el=$('#app');if(V.role=='pub'){el.innerHTML=pub();return}if(!V.role){el.innerHTML=login();return}
+function render0(){applyTheme(V.role=='pub'?(V.pubCfg||{}):V.role?S.cfg:{});const el=$('#app');if(V.role=='pub'){el.innerHTML=pub();return}if(!V.role){el.innerHTML=login();return}
  const R={dono:[ND,PV],barb:[NB,PV]}[V.role];el.innerHTML=shell(R[0],R[1][V.tab]())+mdl()}
+/* Mantém a rolagem ao redesenhar a tela (escolher dia/horário não volta ao topo) */
+function render(){const o=$('.pgw')||$('main'),y=o?o.scrollTop:0,c=o&&o.className=='pgw'?'.pgw':'main';render0();const n=$(c);if(n&&y)n.scrollTop=y}
 function route(){const m=location.hash.match(/^#agendar\/([0-9a-f-]{36})(?:\/(\d+))?$/);
  if(m){V.role='pub';V.shop=m[1];V.bk={};V.pubLoad=true;V.pubErr='';render();
-  loadPub().then(()=>{V.fixB=m[2]&&S.barb.some(b=>b.id==m[2])?+m[2]:0;V.bk={barb:V.fixB||undefined}}).catch(e=>V.pubErr=e.message||'Erro').finally(()=>{V.pubLoad=false;render()})}
+  loadPub().then(()=>{V.fixB=m[2]&&S.barb.some(b=>b.id==m[2])?+m[2]:0;V.bk=bk0()}).catch(e=>V.pubErr=e.message||'Erro').finally(()=>{V.pubLoad=false;render()})}
  else if(V.role=='pub'){V.role=null;render();sb&&sb.auth.getSession().then(r=>r.data.session&&sessao(r.data.session))}
  else render()}
 addEventListener('hashchange',route);route();
@@ -361,7 +364,9 @@ if(sb){sb.auth.onAuthStateChange((ev,ses)=>{setTimeout(()=>{
  if(ev=='SIGNED_OUT')sessao(null);
  else if(V.role!='pub'&&V.role!='dono'&&(ev=='INITIAL_SESSION'||ev=='SIGNED_IN'||ev=='PASSWORD_RECOVERY')&&ses)sessao(ses).then(()=>{if(ev=='PASSWORD_RECOVERY')form('Defina uma nova senha',[{id:'p',l:'Nova senha (mín. 6 caracteres)',ty:'password'}],v=>{if(v.p.length<6)return toast('Mínimo de 6 caracteres')&&false;sb.auth.updateUser({password:v.p}).then(r=>toast(r.error?erroAuth(r.error.message):'Senha atualizada'))},'Salvar')})},0)});
  setInterval(()=>{if(V.role=='dono'&&!M&&document.visibilityState=='visible'&&!document.activeElement?.matches('input,select'))loadAll().then(render).catch(()=>{})},30000)}
-(()=>{const sp=$('#splash');sp.innerHTML=`<div class="tile" style="color:#fff">${CUT(50)}</div><h2>FADE</h2><div class="ld"><i></i></div>`;
+(()=>{const sp=$('#splash');
+ if(/^#agendar\//.test(location.hash)){sp.remove();return}
+ sp.innerHTML=`<div class="tile" style="color:#fff">${CUT(50)}</div><h2>FADE</h2><div class="ld"><i></i></div>`;
  setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),450)},matchMedia('(prefers-reduced-motion:reduce)').matches?300:1900)})();
 if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
