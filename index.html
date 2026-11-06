@@ -163,6 +163,14 @@ const fatPlan=()=>S.pg.filter(p=>p.data.slice(0,7)==mesK()).reduce((t,p)=>t+p.va
 const free=(b,k,h,dur)=>{if(k==K(new Date())){const n=new Date();if(mn(h)<=n.getHours()*60+n.getMinutes())return false}
  return!S.ag.some(a=>a.st!='ca'&&a.barb==b&&a.data==k&&mn(h)<mn(a.hora)+sv(a.serv).dur&&mn(a.hora)<mn(h)+dur)};
 const waUrl=(tel,txt)=>{let n=String(tel||'').replace(/\D/g,'');if(n.length&&n.length<=11)n='55'+n;return'https://wa.me/'+n+(txt?'?text='+encodeURIComponent(txt):'')};
+const dg=x=>String(x||'').replace(/\D/g,'');
+const cpfOk=c=>{c=dg(c);if(c.length!=11||/^(\d)\1+$/.test(c))return false;for(let t=9;t<11;t++){let s=0;for(let i=0;i<t;i++)s+=c[i]*(t+1-i);if((s*10%11)%10!=c[t])return false}return true};
+const mCpf=v=>dg(v).slice(0,11).replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+const mTel=v=>{v=dg(v).slice(0,11);return v.length>10?v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3'):v.length>6?v.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3'):v.length>2?v.replace(/(\d{2})(\d+)/,'($1) $2'):v};
+/* Busca o cliente pelo CPF ou celular. Só o primeiro nome é mostrado na página pública (privacidade). */
+const achar=()=>{const b=V.bk,t=dg(b.tel),c=dg(b.cpf);return(c.length==11&&S.cli.find(x=>dg(x.cpf)==c))||(t.length>=10&&S.cli.find(x=>dg(x.tel)==t))||null};
+const hello=()=>{const c=achar();return c?`Olá, ${esc(c.nome.split(' ')[0])}! Encontramos o seu cadastro${planOk(c)?' e a sua mensalidade está em dia.':'.'}`:''};
+function lookup(){const c=achar(),h=$('#hello'),n=$('#nlb');if(h)h.textContent=hello();if(n)n.textContent='Nome'+(c?' (opcional, já temos o seu)':'')}
 const kpi=(l,v,s='')=>`<div class="card kpi"><small>${l}</small><b>${v}</b>${s?`<small>${s}</small>`:''}</div>`;
 const bars=(v,l)=>{const m=Math.max(...v,1);return`<div class="bars">${v.map((n,i)=>`<div><span>${n}</span><i style="height:${n/m*85}%"></i><span>${esc(l[i])}</span></div>`).join('')}</div>`};
 const stTag=a=>a.st=='ok'?'<span class="tag">concluído</span>':a.st=='ca'?'<span class="tag r">cancelado</span>':'<span class="tag w">agendado</span>';
@@ -179,7 +187,7 @@ const opt=(l,n='nome')=>l.map(x=>[x.id,x[n]]);
 /* ===== Ações ===== */
 const nid=()=>++S.nid;
 function novoBarb(){form('Novo barbeiro',[{id:'n',l:'Nome'},{id:'t',l:'WhatsApp com DDD'}],v=>{if(!v.n)return toast('Informe o nome')&&false;S.barb.push({id:nid(),nome:v.n,tel:v.t});toast('Barbeiro cadastrado')})}
-function novoCli(){form('Novo cliente',[{id:'n',l:'Nome completo'},{id:'t',l:'WhatsApp com DDD'},{id:'p',l:'Mensalidade',o:[['','Avulso (sem plano)'],...opt(S.plan)]}],v=>{if(!v.n)return toast('Informe o nome')&&false;S.cli.push({id:nid(),nome:v.n,tel:v.t,plano:v.p?+v.p:null,venc:v.p?K(D(30)):''});if(v.p)S.pg.push({cli:S.nid,valor:pn(+v.p).preco,data:K(D(0))});toast('Cliente cadastrado')})}
+function novoCli(){form('Novo cliente',[{id:'n',l:'Nome completo'},{id:'t',l:'Celular com DDD'},{id:'f',l:'CPF (opcional)'},{id:'p',l:'Mensalidade',o:[['','Avulso (sem plano)'],...opt(S.plan)]}],v=>{if(!v.n)return toast('Informe o nome')&&false;if(v.f&&!cpfOk(v.f))return toast('CPF inválido')&&false;S.cli.push({id:nid(),nome:v.n,tel:dg(v.t),cpf:dg(v.f),plano:v.p?+v.p:null,venc:v.p?K(D(30)):''});if(v.p)S.pg.push({cli:S.nid,valor:pn(+v.p).preco,data:K(D(0))});toast('Cliente cadastrado')})}
 function novoServ(){form('Novo corte / serviço',[{id:'n',l:'Nome (ex.: Corte social)'},{id:'p',l:'Preço (R$)',ty:'number'},{id:'d',l:'Duração',o:[[30,'30 min'],[60,'1 hora'],[90,'1h30']]}],v=>{if(!v.n||!(+v.p>=0)||v.p==='')return toast('Informe nome e preço')&&false;S.serv.push({id:nid(),nome:v.n,preco:+v.p,dur:+v.d});toast('Serviço adicionado')})}
 function novoPlan(){form('Novo plano de mensalidade',[{id:'n',l:'Nome do plano'},{id:'p',l:'Valor mensal (R$)',ty:'number'},{id:'d',l:'Descrição'}],v=>{if(!v.n||!(+v.p>0))return toast('Informe nome e valor')&&false;S.plan.push({id:nid(),nome:v.n,preco:+v.p,desc:v.d});toast('Plano criado')})}
 function remover(l,id,nome){conf('Remover '+nome+'?','Essa ação não pode ser desfeita.',()=>{S[l]=S[l].filter(x=>x.id!=id);toast('Removido')})}
@@ -191,11 +199,14 @@ function novoAg(){const bs=V.role=='barb'?S.barb.filter(b=>b.id==V.uid):S.barb;
   if(!free(+v.b,k,v.h,sv(+v.s).dur))return toast('Horário indisponível para esse barbeiro')&&false;
   S.ag.push({id:nid(),cli:+v.c,barb:+v.b,serv:+v.s,data:k,hora:v.h,st:'ag'});toast('Horário agendado')})}
 function bk(k,v){V.bk[k]=v;if(k!='hora')V.bk.hora=null;render()}
-function confirmarBk(){const b=V.bk,k=K(D(b.dia??0)),d=(b.tel||'').replace(/\D/g,'');
+function confirmarBk(){const b=V.bk,k=K(D(b.dia??0)),t=dg(b.tel),cp=dg(b.cpf),f=achar();
  if(!b.serv||!b.barb||!b.hora)return toast('Escolha serviço, barbeiro e horário');
- if((b.nome||'').trim().length<2||d.length<10)return toast('Informe seu nome e WhatsApp com DDD');
+ if(!t&&!cp)return toast('Informe o celular ou o CPF');
+ if(b.tel&&t.length<10)return toast('Celular incompleto: use DDD + número');
+ if(b.cpf&&!cpfOk(cp))return toast('CPF inválido');
+ if(!f&&(b.nome||'').trim().length<2)return toast('Informe o seu nome');
  if(!free(b.barb,k,b.hora,sv(b.serv).dur)){V.bk.hora=null;render();return toast('Esse horário acabou de ser ocupado')}
- let c=S.cli.find(x=>String(x.tel||'').replace(/\D/g,'')==d);if(!c){c={id:nid(),nome:b.nome.trim(),tel:d,plano:null,venc:''};S.cli.push(c)}
+ let c=f;if(!c){c={id:nid(),nome:b.nome.trim(),tel:t,cpf:cp,plano:null,venc:''};S.cli.push(c)}else{if(t&&!c.tel)c.tel=t;if(cp&&!c.cpf)c.cpf=cp}
  const a={id:nid(),cli:c.id,barb:b.barb,serv:b.serv,data:k,hora:b.hora,st:'ag'};S.ag.push(a);save();V.bk={barb:V.fixB||undefined,done:a};render();$('.pgw')?.scrollTo?.(0,0)}
 const go=t=>{V.tab=t;render()};
 const sair=()=>{V.role=null;render()};
@@ -214,7 +225,7 @@ const linkCard=id=>`<div class="card" style="margin-bottom:12px"><h3>Link de age
 
 /* ===== Blocos reutilizados (dono e barbeiro) ===== */
 const agRow=a=>`<div class="row"><div style="display:flex;gap:12px;align-items:center;min-width:0"><span class="hr">${a.hora}</span><div><b>${esc(cn(a.cli).nome)}</b><br><small class="hint" style="margin:0">${esc(sv(a.serv).nome)}${V.role=='dono'?' · '+esc(bn(a.barb).nome):''}</small></div></div><span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">${stTag(a)}${a.st=='ag'?`<button class="btn s p" onclick="setSt(${a.id},'ok')">Concluir</button><button class="btn s d" onclick="setSt(${a.id},'ca')">Cancelar</button>`:''}</span></div>`;
-const cliTable=()=>`<div class="card"><div class="wrap"><table><tr><th>Cliente</th><th>WhatsApp</th><th>Plano</th><th>Situação</th><th></th></tr>${S.cli.map(c=>`<tr><td><b>${esc(c.nome)}</b></td><td><a href="${waUrl(c.tel)}" target="_blank" rel="noopener" style="color:var(--pr)">${esc(c.tel||'—')}</a></td><td>${c.plano?esc(pn(c.plano).nome):'—'}</td><td>${planTag(c)}${c.plano?' <small class="hint">'+fd(c.venc)+'</small>':''}</td><td style="white-space:nowrap">${c.plano?`<button class="btn s p" onclick="renovar(${c.id})">Renovar</button> `:''}<button class="btn s" onclick="planoCli(${c.id})">Plano</button>${V.role=='dono'?` <button class="btn s d" onclick="remover('cli',${c.id},'${esc(c.nome).replace(/'/g,'')}')">×</button>`:''}</td></tr>`).join('')||'<tr><td colspan="5"><span class="hint">Nenhum cliente.</span></td></tr>'}</table></div></div>`;
+const cliTable=()=>`<div class="card"><div class="wrap"><table><tr><th>Cliente</th><th>Celular</th><th>CPF</th><th>Plano</th><th>Situação</th><th></th></tr>${S.cli.map(c=>`<tr><td><b>${esc(c.nome)}</b></td><td><a href="${waUrl(c.tel)}" target="_blank" rel="noopener" style="color:var(--pr)">${esc(c.tel?mTel(c.tel):'—')}</a></td><td>${c.cpf?'•••.•••.•••-'+esc(dg(c.cpf).slice(9)):'—'}</td><td>${c.plano?esc(pn(c.plano).nome):'—'}</td><td>${planTag(c)}${c.plano?' <small class="hint">'+fd(c.venc)+'</small>':''}</td><td style="white-space:nowrap">${c.plano?`<button class="btn s p" onclick="renovar(${c.id})">Renovar</button> `:''}<button class="btn s" onclick="planoCli(${c.id})">Plano</button>${V.role=='dono'?` <button class="btn s d" onclick="remover('cli',${c.id},'${esc(c.nome).replace(/'/g,'')}')">×</button>`:''}</td></tr>`).join('')||'<tr><td colspan="6"><span class="hint">Nenhum cliente.</span></td></tr>'}</table></div></div>`;
 const dayChips=()=>`<div class="chips">${[0,1,2,3,4,5,6].map(i=>`<button class="chip ${V.dia==i?'on':''}" onclick="V.dia=${i};render()">${i==0?'Hoje':DS[D(i).getDay()]+' '+fd(K(D(i)))}</button>`).join('')}</div>`;
 
 /* ===== Telas do DONO e do BARBEIRO ===== */
@@ -253,7 +264,12 @@ function pub(){const b=V.bk,k=K(D(b.dia??0)),s=b.serv&&sv(b.serv),a=b.done,hd=`<
  ${V.fixB?'':`<h3>2. Barbeiro</h3><div class="chips">${S.barb.map(x=>`<button class="chip ${b.barb==x.id?'on':''}" onclick="bk('barb',${x.id})">${esc(x.nome)}</button>`).join('')}</div>`}
  <h3>${2+(1-n)}. Dia</h3><div class="chips">${[...Array(14).keys()].map(i=>`<button class="chip ${(b.dia??0)==i?'on':''}" onclick="bk('dia',${i})">${i==0?'Hoje':DS[D(i).getDay()]+' '+fd(K(D(i)))}</button>`).join('')}</div>
  <h3>${3+(1-n)}. Horário</h3>${s&&b.barb?`<div class="chips">${SL.filter(h=>free(b.barb,k,h,s.dur)).map(h=>`<button class="chip ${b.hora==h?'on':''}" onclick="bk('hora','${h}')">${h}</button>`).join('')||'<span class="hint">Sem horários livres neste dia. Tente outro dia.</span>'}</div>`:'<p class="hint">Escolha o serviço'+(V.fixB?'':' e o barbeiro')+' para ver os horários livres.</p>'}
- <h3>Seus dados</h3><label class="fl"><small>Nome</small><input value="${esc(b.nome||'')}" oninput="V.bk.nome=this.value" autocomplete="name"></label><label class="fl"><small>WhatsApp com DDD</small><input type="tel" inputmode="tel" value="${esc(b.tel||'')}" oninput="V.bk.tel=this.value" autocomplete="tel"></label>
+ <h3>Seus dados</h3><p class="hint">Informe o celular ou o CPF: se você já é cliente, encontramos o seu cadastro.</p>
+ <label class="fl"><small>Celular com DDD</small><input type="tel" inputmode="tel" autocomplete="tel" placeholder="(81) 98888-7777" value="${esc(b.tel||'')}" oninput="this.value=V.bk.tel=mTel(this.value);lookup()"></label>
+ <label class="fl"><small>CPF</small><input inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" value="${esc(b.cpf||'')}" oninput="this.value=V.bk.cpf=mCpf(this.value);lookup()"></label>
+ <p id="hello" class="hint" style="color:var(--pr);font-weight:600">${hello()}</p>
+ <label class="fl"><small id="nlb">Nome${achar()?' (opcional, já temos o seu)':''}</small><input value="${esc(b.nome||'')}" oninput="V.bk.nome=this.value" autocomplete="name"></label>
+ <p class="hint">Ao agendar, você autoriza o uso dos seus dados apenas para o atendimento.</p>
  <button class="btn p g" onclick="confirmarBk()">Confirmar agendamento</button></div></div></div>`}
 
 /* ===== Estrutura ===== */
