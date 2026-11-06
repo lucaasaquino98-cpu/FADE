@@ -132,6 +132,7 @@ cut:'<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.6 7.
 tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.2"/>',
 chart:'<path d="M4 20V11M10 20V4M16 20v-8M22 20H2"/>',
 out:'<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>',
+cog:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
 face:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>'};
 const CUT=s=>`<svg viewBox="0 0 24 24" style="width:${s}px;height:${s}px;overflow:visible"><g class="sb"><circle cx="6" cy="18" r="3"/><path d="M8.6 16.4L20 6"/></g><g class="sa"><circle cx="6" cy="6" r="3"/><path d="M8.6 7.6L20 18"/></g></svg>`;
 const ic=(n,s=20)=>`<svg viewBox="0 0 24 24" style="width:${s}px;height:${s}px">${I[n]}</svg>`;
@@ -144,7 +145,7 @@ plan:[{id:1,nome:'Corte Ilimitado',preco:99,desc:'Cortes e barba à vontade no m
 cli:[{id:1,nome:'Lucas Almeida',tel:'81988880001',plano:1,venc:K(D(12))},{id:2,nome:'Mateus Rocha',tel:'81988880002',plano:2,venc:K(D(3))},{id:3,nome:'Pedro Santos',tel:'81988880003',plano:null,venc:''},{id:4,nome:'Caio Ferreira',tel:'81988880004',plano:1,venc:K(D(-4))}],
 ag:[{id:1,cli:3,barb:1,serv:3,data:K(D(0)),hora:'10:00',st:'ag'},{id:2,cli:1,barb:2,serv:1,data:K(D(0)),hora:'14:30',st:'ag'},{id:3,cli:3,barb:1,serv:1,data:K(D(-1)),hora:'11:00',st:'ok'},{id:4,cli:2,barb:2,serv:2,data:K(D(-2)),hora:'16:00',st:'ok'}],
 pg:[{cli:1,valor:99,data:K(D(-10))}]});
-let S=DB.load()||seed();
+let S=DB.load()||seed();S.cfg=S.cfg||{grupo:''};
 let V={role:null,tab:'',dia:0,uid:0,bk:{}},M=null;
 const save=()=>DB.save(S);
 function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',2400);return true}
@@ -203,7 +204,13 @@ const entrar=(r,id)=>{V.role=r;V.uid=+id||0;const h=location.hash.slice(1),ok=({
 /* ===== Link de agendamento ===== */
 const lk=id=>location.href.split('#')[0]+'#agendar'+(id?'-'+id:'');
 function copiar(id){const l=lk(id);(navigator.clipboard?navigator.clipboard.writeText(l):Promise.reject()).then(()=>toast('Link copiado')).catch(()=>toast('Copie o link: '+l))}
-const linkCard=id=>`<div class="card" style="margin-bottom:12px"><h3>Link de agendamento${id?'':' da barbearia'}</h3><p class="hint">Envie aos clientes: eles marcam sozinhos nos horários livres, sem criar conta.</p><small class="hint" style="word-break:break-all;display:block">${esc(lk(id))}</small><div class="acts" style="justify-content:flex-start"><button class="btn p s" onclick="copiar(${id})">Copiar link</button><a class="btn s" target="_blank" rel="noopener" href="${waUrl('','Agende seu horário na FADE: '+lk(id))}">Enviar no WhatsApp</a></div></div>`;
+const msg=id=>id?`${bn(id).nome}, este é o seu link de agendamento na ${S.nome}: ${lk(id)}`:`Agende seu horário na ${S.nome}: ${lk(0)}`;
+function zap(id){const t=msg(id),g=S.cfg.grupo;try{navigator.clipboard&&navigator.clipboard.writeText(t)}catch(e){}
+ if(g){window.open(g,'_blank','noopener');toast('Mensagem copiada: cole no grupo')}else{window.open(waUrl('',t),'_blank','noopener');toast('Dica: configure o link do grupo em Ajustes')}}
+function salvarCfg(){const n=$('#c_nome').value.trim(),g=$('#c_grupo').value.trim();
+ if(g&&!/^https:\/\/chat\.whatsapp\.com\/[\w-]+/.test(g))return toast('Link inválido. Use o link de convite do grupo (chat.whatsapp.com/...)');
+ S.nome=n||'FADE';S.cfg.grupo=g;save();toast('Configurações salvas');render()}
+const linkCard=id=>`<div class="card" style="margin-bottom:12px"><h3>Link de agendamento${id?'':' da barbearia'}</h3><p class="hint">Envie aos clientes: eles marcam sozinhos nos horários livres, sem criar conta.</p><small class="hint" style="word-break:break-all;display:block">${esc(lk(id))}</small><div class="acts" style="justify-content:flex-start"><button class="btn p s" onclick="copiar(${id})">Copiar link</button><button class="btn s" onclick="zap(${id})">Enviar no WhatsApp</button></div></div>`;
 
 /* ===== Blocos reutilizados (dono e barbeiro) ===== */
 const agRow=a=>`<div class="row"><div style="display:flex;gap:12px;align-items:center;min-width:0"><span class="hr">${a.hora}</span><div><b>${esc(cn(a.cli).nome)}</b><br><small class="hint" style="margin:0">${esc(sv(a.serv).nome)}${V.role=='dono'?' · '+esc(bn(a.barb).nome):''}</small></div></div><span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">${stTag(a)}${a.st=='ag'?`<button class="btn s p" onclick="setSt(${a.id},'ok')">Concluir</button><button class="btn s d" onclick="setSt(${a.id},'ca')">Cancelar</button>`:''}</span></div>`;
@@ -220,9 +227,15 @@ painel(){const t=K(D(0)),hj=agDia(t),pend=hj.filter(a=>a.st=='ag'),dono=V.role==
 agenda(){const l=agDia(K(D(V.dia)));
  return`<div class="top"><h1>Agenda</h1><button class="btn p" onclick="novoAg()">Novo horário</button></div>${dayChips()}<div class="card"><h3>${V.dia==0?'Hoje':DAYS[D(V.dia).getDay()]} · ${l.filter(a=>a.st!='ca').length} horário(s)</h3>${l.map(agRow).join('')||'<p class="hint">Dia livre. Toque em "Novo horário".</p>'}</div>`},
 cli(){return`<div class="top"><h1>Clientes</h1><button class="btn p" onclick="novoCli()">Novo cliente</button></div>${cliTable()}`},
-barb(){return`<div class="top"><h1>Barbeiros</h1><button class="btn p" onclick="novoBarb()">Novo barbeiro</button></div><div class="card"><div class="wrap"><table><tr><th>Nome</th><th>WhatsApp</th><th>Hoje</th><th>Faturado no mês</th><th></th></tr>${S.barb.map(b=>`<tr><td><b>${esc(b.nome)}</b></td><td><a href="${waUrl(b.tel)}" target="_blank" rel="noopener" style="color:var(--pr)">${esc(b.tel||'—')}</a></td><td>${agDia(K(D(0)),S.ag.filter(a=>a.barb==b.id&&a.st!='ca')).length}</td><td>${brl(fatServ(b.id))}</td><td style="white-space:nowrap"><button class="btn s" onclick="copiar(${b.id})">Copiar link</button> <button class="btn s d" onclick="remover('barb',${b.id},'${esc(b.nome).replace(/'/g,'')}')">×</button></td></tr>`).join('')}</table></div></div>`},
+barb(){return`<div class="top"><h1>Barbeiros</h1><button class="btn p" onclick="novoBarb()">Novo barbeiro</button></div><div class="card"><div class="wrap"><table><tr><th>Nome</th><th>WhatsApp</th><th>Hoje</th><th>Faturado no mês</th><th></th></tr>${S.barb.map(b=>`<tr><td><b>${esc(b.nome)}</b></td><td><a href="${waUrl(b.tel)}" target="_blank" rel="noopener" style="color:var(--pr)">${esc(b.tel||'—')}</a></td><td>${agDia(K(D(0)),S.ag.filter(a=>a.barb==b.id&&a.st!='ca')).length}</td><td>${brl(fatServ(b.id))}</td><td style="white-space:nowrap"><button class="btn s" onclick="copiar(${b.id})">Copiar link</button> <button class="btn s p" onclick="zap(${b.id})">Enviar no WhatsApp</button> <button class="btn s d" onclick="remover('barb',${b.id},'${esc(b.nome).replace(/'/g,'')}')">×</button></td></tr>`).join('')}</table></div></div>`},
 serv(){return`<div class="top"><h1>Cortes e serviços</h1><button class="btn p" onclick="novoServ()">Novo serviço</button></div><div class="card">${S.serv.map(s=>`<div class="row"><div><b>${esc(s.nome)}</b><br><small class="hint" style="margin:0">${s.dur} min</small></div><span style="display:flex;gap:8px;align-items:center"><b>${brl(s.preco)}</b><button class="btn s d" onclick="remover('serv',${s.id},'${esc(s.nome).replace(/'/g,'')}')">×</button></span></div>`).join('')||'<p class="hint">Nenhum serviço.</p>'}</div>`},
 plan(){return`<div class="top"><h1>Mensalidades</h1><button class="btn p" onclick="novoPlan()">Novo plano</button></div><p class="hint">Cliente com plano em dia não paga os atendimentos avulsos: o valor entra pela mensalidade.</p><div class="kpis">${S.plan.map(p=>`<div class="card kpi"><small>${esc(p.nome)}</small><b>${brl(p.preco)}<small style="display:inline"> /mês</small></b><small>${esc(p.desc||'')}</small><small style="margin:6px 0">${S.cli.filter(c=>c.plano==p.id&&planOk(c)).length} assinante(s)</small><button class="btn s d" onclick="remover('plan',${p.id},'${esc(p.nome).replace(/'/g,'')}')">Remover</button></div>`).join('')||'<p class="hint">Nenhum plano.</p>'}</div>`},
+config(){const g=S.cfg.grupo;return`<div class="top"><h1>Configurações</h1></div>
+ <div class="card" style="max-width:560px"><h3>Barbearia</h3><label class="fl"><small>Nome da barbearia</small><input id="c_nome" value="${esc(S.nome)}"></label>
+ <h3>WhatsApp</h3><label class="fl"><small>Link do grupo dos barbeiros</small><input id="c_grupo" type="url" inputmode="url" placeholder="https://chat.whatsapp.com/..." value="${esc(g)}"></label>
+ <p class="hint">No WhatsApp: abra o grupo, toque no nome dele, depois em Convidar via link e copie. Os botões "Enviar no WhatsApp" passam a abrir esse grupo direto. O WhatsApp não aceita texto pronto em grupo, então o app copia a mensagem e você só cola.</p>
+ <div class="acts" style="justify-content:flex-start"><button class="btn p" onclick="salvarCfg()">Salvar</button>${g?`<a class="btn" href="${esc(g)}" target="_blank" rel="noopener">Testar link do grupo</a>`:''}</div></div>
+ <div class="card" style="max-width:560px;margin-top:12px"><h3>Conta</h3><p class="hint" style="margin:0">Login por e-mail e senha, independente para cada barbearia. Será ativado quando o Supabase for conectado.</p></div>`},
 rel(){const w=[0,0,0,0,0,0,0],q={};let tot=0;S.ag.filter(a=>a.st=='ok'&&a.data>=K(D(-27))).forEach(a=>{w[new Date(a.data+'T00:00').getDay()]++;q[a.serv]=(q[a.serv]||0)+1;tot++});
  const rk=S.serv.map(s=>[s.nome,q[s.id]||0]).sort((a,b)=>b[1]-a[1]),mx=Math.max(...rk.map(r=>r[1]),1);
  return`<div class="top"><h1>Relatórios</h1><span class="hint" style="margin:0">últimos 28 dias</span></div>
@@ -233,7 +246,7 @@ rel(){const w=[0,0,0,0,0,0,0],q={};let tot=0;S.ag.filter(a=>a.st=='ok'&&a.data>=
 };
 
 /* ===== Página pública de agendamento (link enviado aos clientes, sem login) ===== */
-function pub(){const b=V.bk,k=K(D(b.dia??0)),s=b.serv&&sv(b.serv),a=b.done,hd=`<div class="brandp"><i style="color:#fff">${CUT(18)}</i>FADE</div>`,n=V.fixB?1:0;
+function pub(){const b=V.bk,k=K(D(b.dia??0)),s=b.serv&&sv(b.serv),a=b.done,hd=`<div class="brandp"><i style="color:#fff">${CUT(18)}</i>${esc(S.nome)}</div>`,n=V.fixB?1:0;
  if(a)return`<div class="pgw"><div class="pg">${hd}<div class="card" style="text-align:center"><span class="tag" style="font-size:13px;padding:4px 14px">Horário confirmado</span><h1 style="margin:14px 0 6px">${DAYS[new Date(a.data+'T00:00').getDay()]}, ${fd(a.data)} às ${a.hora}</h1><p class="hint">${esc(sv(a.serv).nome)} com ${esc(bn(a.barb).nome)}</p><a class="btn p g" target="_blank" rel="noopener" href="${waUrl(bn(a.barb).tel,'Olá! Agendei '+sv(a.serv).nome+' para '+fd(a.data)+' às '+a.hora+'.')}">Avisar o barbeiro no WhatsApp</a><button class="btn g" style="margin-top:8px" onclick="V.bk={barb:V.fixB||undefined};render()">Agendar outro horário</button></div></div></div>`;
  return`<div class="pgw"><div class="pg">${hd}<h1 style="margin-bottom:4px">Agende seu horário</h1><p class="hint">${V.fixB?'Com '+esc(bn(V.fixB).nome)+'. ':''}Escolha o serviço, o dia e um horário livre.</p>
  <div class="card"><h3>1. Serviço</h3><div class="chips">${S.serv.map(x=>`<button class="chip ${b.serv==x.id?'on':''}" onclick="bk('serv',${x.id})">${esc(x.nome)} · ${brl(x.preco)}</button>`).join('')}</div>
@@ -244,15 +257,14 @@ function pub(){const b=V.bk,k=K(D(b.dia??0)),s=b.serv&&sv(b.serv),a=b.done,hd=`<
  <button class="btn p g" onclick="confirmarBk()">Confirmar agendamento</button></div></div></div>`}
 
 /* ===== Estrutura ===== */
-const ND=[['painel','Visão geral','home'],['agenda','Agenda','cal'],['barb','Barbeiros','users'],['cli','Clientes','face'],['serv','Cortes','cut'],['plan','Planos','tag'],['rel','Relatórios','chart']];
+const ND=[['painel','Visão geral','home'],['agenda','Agenda','cal'],['barb','Barbeiros','users'],['cli','Clientes','face'],['serv','Cortes','cut'],['plan','Planos','tag'],['rel','Relatórios','chart'],['config','Ajustes','cog']];
 const NB=[['painel','Meu dia','home'],['agenda','Agenda','cal'],['cli','Clientes','face']];
 function login(){const o=(l)=>l.map(x=>`<option value="${x.id}">${esc(x.nome)}</option>`).join('');
  return`<div class="lg"><div class="box"><div class="tile" style="color:#fff">${CUT(50)}</div><h2>FADE</h2><p>Agenda, cortes e mensalidade da sua barbearia</p>
  <input id="le" type="email" placeholder="E-mail" autocomplete="username"><input id="lp" type="password" placeholder="Senha" autocomplete="current-password">
  <button class="btn" onclick="toast('O login real entra quando o Supabase for conectado')">Entrar</button>
  <hr><p style="margin:14px 0 0">Modo demonstração</p>
- <button class="btn o" onclick="entrar('dono')">Entrar como dono</button>
- <select id="db">${o(S.barb)}</select><button class="btn o" onclick="entrar('barb',$('#db').value)">Entrar como barbeiro</button></div></div>`}
+ <button class="btn o" onclick="entrar('dono')">Entrar como dono</button></div></div>`}
 function shell(items,body){const u=V.role=='dono'?'Dono':bn(V.uid).nome,rl={dono:'Barbearia',barb:'Barbeiro'}[V.role];
  return`<div class="app"><nav><div class="brand"><i style="color:#fff">${CUT(18)}</i>FADE</div><div class="lb">${rl}</div>
  ${items.map(i=>`<button class="${V.tab==i[0]?'on':''}" onclick="go('${i[0]}')">${ic(i[2])}<span>${i[1]}</span></button>`).join('')}
