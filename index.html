@@ -14,8 +14,9 @@
 <meta name="apple-mobile-web-app-title" content="FADE">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
-:root{--bg:#f1f3f6;--sf:#fff;--tx:#14181f;--mu:#6b7280;--bd:#e3e6eb;--pr:#0f766e;--prt:#fff;--ok:#16a34a;--wa:#b45309;--ba:#dc2626;--tint:#e6f6f4;--tc:#fff;--nv:#0b1220;color-scheme:light}
+:root{--bg:#f1f3f6;--sf:#fff;--tx:#14181f;--mu:#6b7280;--bd:#e3e6eb;--pr:#0f766e;--prt:#fff;--ok:#16a34a;--wa:#b45309;--ba:#dc2626;--tint:#e6f6f4;--tc:#fff;--nv:#0b1220;--ac:#14b8a6;--ac2:#0f766e;--act:#04201c;color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c0f14;--sf:#171b22;--tx:#eef0f3;--mu:#98a1b0;--bd:#262c36;--pr:#2dd4bf;--prt:#042f2a;--ok:#4ade80;--wa:#fbbf24;--ba:#f87171;--tint:#0f2a28;--tc:#0b1220;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0c0f14;--sf:#171b22;--tx:#eef0f3;--mu:#98a1b0;--bd:#262c36;--pr:#2dd4bf;--prt:#042f2a;--ok:#4ade80;--wa:#fbbf24;--ba:#f87171;--tint:#0f2a28;--tc:#0b1220;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 html{background:var(--bg)}html:has(.lg){background:#0b1220}
@@ -24,20 +25,20 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke
 .app{display:flex;height:100dvh}
 nav{width:236px;background:var(--nv);color:#94a3b8;padding:18px 12px;display:flex;flex-direction:column;gap:6px;flex-shrink:0;overflow-y:auto}
 .brand{display:flex;align-items:center;gap:10px;padding:2px 8px 18px;color:#fff;font-weight:800;font-size:16px;letter-spacing:.08em}
-.brand i{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#14b8a6,#0f766e);display:grid;place-items:center}
+.brand i{overflow:hidden;width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center}
 nav .lb{font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;color:#475569}
 nav button{all:unset;cursor:pointer;padding:11px 12px;border-radius:10px;font-weight:500;display:flex;gap:12px;align-items:center}
 nav button:hover{background:rgba(255,255,255,.07);color:#fff}
-nav button.on{background:#14b8a6;color:#04201c;font-weight:700}
+nav button.on{background:var(--ac);color:var(--act);font-weight:700}
 nav button.lgo{justify-content:center;margin-top:4px;color:#fca5a5;border:1px solid rgba(248,113,113,.3);font-weight:600}
 .sp{flex:1}
 .usr{display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;background:rgba(255,255,255,.06);color:#fff}
-.usr b{width:34px;height:34px;border-radius:50%;background:#14b8a6;display:grid;place-items:center;color:#04201c}
+.usr b{width:34px;height:34px;border-radius:50%;background:var(--ac);display:grid;place-items:center;color:var(--act)}
 .usr small{display:block;color:#64748b}
 main{flex:1;overflow:auto;padding:18px;padding-top:calc(18px + env(safe-area-inset-top,0px));min-width:0}
 .top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
 h1{font-size:20px;margin:0;flex:1;min-width:120px}h3{margin:0 0 10px;font-size:14px}
-select,input{font:inherit;color:var(--tx);background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;min-width:0}
+select,input,textarea{font:inherit;color:var(--tx);background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;min-width:0}
 :focus-visible{outline:2px solid var(--pr);outline-offset:2px}
 .btn{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--sf);color:var(--tx);border-radius:8px;padding:8px 14px;font-weight:600;text-decoration:none;display:inline-block}
 .btn.p{background:var(--pr);color:var(--prt);border-color:var(--pr)}.btn.s{padding:5px 10px;font-size:12px}.btn.d{color:var(--ba)}
@@ -60,7 +61,7 @@ th{color:var(--mu);font-weight:600;font-size:12px}.wrap{overflow-x:auto}
 .bars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:11px;color:var(--mu)}
 .bars i{width:100%;max-width:38px;background:var(--pr);border-radius:6px 6px 0 0;min-height:3px}
 .hr{font-weight:800;min-width:48px}
-.hero{background:linear-gradient(135deg,#14b8a6,#0f766e);color:#fff;border:0;display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.hero{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border:0;display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
 .hero h1{color:#fff}
 .mod{position:fixed;inset:0;background:rgba(0,0,0,.56);display:flex;align-items:center;justify-content:center;padding:16px;z-index:5}
 .mod .card{width:100%;max-width:420px;max-height:100%;overflow:auto}
@@ -69,10 +70,10 @@ th{color:var(--mu);font-weight:600;font-size:12px}.wrap{overflow-x:auto}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:9;display:none}
 .lg{min-height:100dvh;display:grid;place-items:center;padding:20px;background:radial-gradient(60% 48% at 50% 38%,rgba(20,184,166,.22),transparent 72%),#0b1220;color:#fff}
 .lg .box{width:100%;max-width:380px;text-align:center}
-.tile{width:88px;height:88px;border-radius:26px;background:linear-gradient(135deg,#14b8a6,#0f766e);display:grid;place-items:center;margin:0 auto;box-shadow:0 18px 50px rgba(20,184,166,.35),inset 0 1px 0 rgba(255,255,255,.25)}
+.tile{width:88px;height:88px;border-radius:26px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center;margin:0 auto;box-shadow:0 18px 50px rgba(20,184,166,.35),inset 0 1px 0 rgba(255,255,255,.25)}
 .lg h2{font-size:28px;font-weight:800;letter-spacing:.2em;margin:20px 0 4px}
 .lg p{color:#94a3b8;margin:0 0 22px}
-.lg .btn{width:100%;margin-top:10px;padding:14px;font-size:15px;background:#14b8a6;color:#04201c;border:0}
+.lg .btn{width:100%;margin-top:10px;padding:14px;font-size:15px;background:var(--ac);color:var(--act);border:0}
 .lg .btn.o{background:rgba(255,255,255,.08);color:#fff}
 .lg select,.lg input{width:100%;margin-top:10px;padding:13px;font-size:16px;background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.18)}
 .lg option{color:#14181f}.lg input::placeholder{color:#64748b}
@@ -86,12 +87,12 @@ th{color:var(--mu);font-weight:600;font-size:12px}.wrap{overflow-x:auto}
 #splash .tile{animation:pop .55s cubic-bezier(.34,1.56,.64,1) both}
 #splash .sa,#splash .sb{animation:sn 1.4s ease-in-out .15s both}
 .ld{width:170px;height:5px;border-radius:99px;background:rgba(255,255,255,.12);margin-top:26px;overflow:hidden}
-.ld i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#14b8a6,#5eead4);animation:ld 1.7s cubic-bezier(.4,0,.2,1) forwards}
+.ld i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--ac),#5eead4);animation:ld 1.7s cubic-bezier(.4,0,.2,1) forwards}
 @keyframes ld{to{width:100%}}
 .pgw{height:100dvh;overflow:auto}
 .pg{max-width:560px;margin:0 auto;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
 .brandp{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.08em;margin:4px 0 16px}
-.brandp i{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#14b8a6,#0f766e);display:grid;place-items:center}
+.brandp i{overflow:hidden;width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center}
 @keyframes sn{0%,100%{transform:rotate(0)}14%{transform:rotate(calc(var(--s)*-28deg))}30%{transform:rotate(calc(var(--s)*9deg))}46%{transform:rotate(calc(var(--s)*-28deg))}62%{transform:rotate(calc(var(--s)*9deg))}78%{transform:rotate(calc(var(--s)*-28deg))}}
 @keyframes pop{0%{transform:scale(.6) rotate(-12deg);opacity:0}100%{transform:none;opacity:1}}
 @media (prefers-reduced-motion:reduce){#splash .tile,#splash .sa,#splash .sb,#splash .ld i{animation:none!important}#splash .ld i{width:100%}}
@@ -102,6 +103,13 @@ nav .brand,nav .sp,nav .usr,nav .lb{display:none}
 nav button{flex-direction:column;gap:2px;font-size:10px;padding:6px 4px}
 main{padding:12px;padding-top:calc(12px + env(safe-area-inset-top,0px))}.two{grid-template-columns:1fr}
 }
+.brand span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sw{width:32px;height:32px;border-radius:50%;border:2px solid var(--bd);cursor:pointer;padding:0}.sw.on{outline:3px solid var(--tx);outline-offset:2px}
+input[type=color]{padding:0;width:40px;height:32px;border:0;background:none;cursor:pointer}
+textarea{width:100%;font:inherit;resize:vertical}
+.ph{width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center;color:#fff;overflow:hidden;flex-shrink:0}
+.mob{display:none}
+@media (max-width:760px){.dsk{display:none}.mob{display:inline}}
 </style>
 </head>
 <body>
@@ -122,13 +130,13 @@ async function sync(){if(!S.uid||!sb)return;
   if(up.length){const{error}=await sb.from(TB[k]).upsert(up.map(r=>({...r,dono_id:S.uid})));if(error)throw error}
   if(del.length){const{error}=await sb.from(TB[k]).delete().in('id',del);if(error)throw error}
   LAST[k]=new Map(cur.map(r=>[r.id,JSON.stringify(r)]))}
-  const{error}=await sb.from('config').upsert({dono_id:S.uid,nome:S.nome,grupo:S.cfg.grupo});if(error)throw error
+  const{error}=await sb.from('config').upsert({dono_id:S.uid,nome:S.nome,grupo:S.cfg.grupo,cor:S.cfg.cor,cor_menu:S.cfg.cormenu,logo:S.cfg.logo,tema:S.cfg.tema,msg_barb:S.cfg.msgb,msg_geral:S.cfg.msgg,boas:S.cfg.boas});if(error)throw error
  }catch(e){toast('Erro ao salvar: '+(e.message||e))}}
 const save=()=>{sync()};
 async function loadAll(){const rs=await Promise.all([...Object.values(TB).map(t=>sb.from(t).select('*')),sb.from('config').select('*').maybeSingle()]);
  const er=rs.find(r=>r.error);if(er)throw er.error;
  Object.keys(TB).forEach((k,i)=>S[k]=rs[i].data||[]);
- const c=rs[6].data;S.nome=c?.nome||'FADE';S.cfg.grupo=c?.grupo||'';snap();
+ const c=rs[6].data;S.nome=c?.nome||'FADE';Object.assign(S.cfg,{grupo:c?.grupo||'',cor:c?.cor||'',cormenu:c?.cor_menu||'',logo:c?.logo||'',tema:c?.tema||'auto',msgb:c?.msg_barb||'',msgg:c?.msg_geral||'',boas:c?.boas||''});snap();
  if(!c){S.serv=[{id:nid(),nome:'Corte',preco:45,dur:30},{id:nid(),nome:'Barba',preco:30,dur:30},{id:nid(),nome:'Corte + Barba',preco:70,dur:60}];sync()}}
 /* Autenticação por e-mail: cada barbearia tem a própria conta */
 const erroAuth=m=>/Invalid login/i.test(m)?'E-mail ou senha incorretos':/already registered/i.test(m)?'Esse e-mail já tem conta':/at least 6/i.test(m)?'A senha precisa de 6 caracteres ou mais':m;
@@ -143,7 +151,7 @@ async function esqueci(){const e=$('#le').value.trim();if(!sb||!e)return toast('
 /* Página pública: tudo passa pela Edge Function agenda-publica (sem login) */
 async function api(a,d){const{data,error}=await sb.functions.invoke('agenda-publica',{body:{a,...d}});
  if(error){let m=error.message;try{m=(await error.context.json()).erro||m}catch(e){}throw new Error(m)}return data}
-async function loadPub(){if(!sb)throw new Error('Sem conexão com o servidor');const i=await api('info',{shop:V.shop});S.nome=i.nome;S.barb=i.barbeiros;S.serv=i.servicos;S.ag=i.ocupados}
+async function loadPub(){if(!sb)throw new Error('Sem conexão com o servidor');const i=await api('info',{shop:V.shop});V.pubCfg={cor:i.cor||'',logo:i.logo||'',boas:i.boas||'',tema:'auto'};S.nome=i.nome;S.barb=i.barbeiros;S.serv=i.servicos;S.ag=i.ocupados}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const DAYS=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],DS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
@@ -162,13 +170,23 @@ cut:'<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.6 7.
 tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.2"/>',
 chart:'<path d="M4 20V11M10 20V4M16 20v-8M22 20H2"/>',
 out:'<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>',
-cog:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
+cog:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
 face:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>'};
 const CUT=s=>`<svg viewBox="0 0 24 24" style="width:${s}px;height:${s}px;overflow:visible"><g class="sb"><circle cx="6" cy="18" r="3"/><path d="M8.6 16.4L20 6"/></g><g class="sa"><circle cx="6" cy="6" r="3"/><path d="M8.6 7.6L20 18"/></g></svg>`;
+const logoOk=l=>/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(l||'');
+const ico=(c,z)=>logoOk(c&&c.logo)?`<img src="${c.logo}" alt="" style="width:100%;height:100%;object-fit:cover">`:CUT(z);
+const lum=h=>{const n=parseInt(h.slice(1),16);return(.299*(n>>16&255)+.587*(n>>8&255)+.114*(n&255))/255};
+const mix=(h,t,a)=>{const n=parseInt(h.slice(1),16);return'#'+[n>>16&255,n>>8&255,n&255].map(v=>Math.round(v+(t-v)*a).toString(16).padStart(2,'0')).join('')};
+function applyTheme(c){const r=document.documentElement,st=r.style,t=c.tema||'auto',hx=/^#[0-9a-f]{6}$/i;
+ t=='auto'?r.removeAttribute('data-theme'):r.setAttribute('data-theme',t);
+ const dark=t=='dark'||(t=='auto'&&matchMedia('(prefers-color-scheme:dark)').matches);
+ ['--pr','--prt','--tint','--ac','--ac2','--act','--nv'].forEach(k=>st.removeProperty(k));
+ if(hx.test(c.cor)){const b=c.cor,pr=dark&&lum(b)<.55?mix(b,255,.4):b;st.setProperty('--pr',pr);st.setProperty('--prt',lum(pr)>.6?'#04201c':'#fff');st.setProperty('--tint',mix(pr,dark?0:255,dark?.82:.9));st.setProperty('--ac',b);st.setProperty('--ac2',mix(b,0,.35));st.setProperty('--act',lum(b)>.6?'#04201c':'#fff')}
+ if(hx.test(c.cormenu))st.setProperty('--nv',c.cormenu)}
 const ic=(n,s=20)=>`<svg viewBox="0 0 24 24" style="width:${s}px;height:${s}px">${I[n]}</svg>`;
 
 /* ===== Estado ===== */
-let S={nome:'FADE',nid:0,uid:null,email:'',cfg:{grupo:''},barb:[],serv:[],plan:[],cli:[],ag:[],pg:[]};
+let S={nome:'FADE',nid:0,uid:null,email:'',cfg:{grupo:'',cor:'',cormenu:'',logo:'',tema:'auto',msgb:'',msgg:'',boas:''},barb:[],serv:[],plan:[],cli:[],ag:[],pg:[]};
 let V={role:null,tab:'',dia:0,uid:0,bk:{}},M=null;
 function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',2400);return true}
 
@@ -231,19 +249,26 @@ async function confirmarBk(){const b=V.bk,t=dg(b.tel),cp=dg(b.cpf);
  try{const r=await api('agendar',{shop:V.shop,serv:b.serv,barb:b.barb,data:K(D(b.dia??0)),hora:b.hora,tel:t,cpf:cp,nome:(b.nome||'').trim()});
   V.bk={barb:V.fixB||undefined,done:r.ag};render();$('.pgw')?.scrollTo?.(0,0);loadPub().then(()=>{})}
  catch(e){toast(e.message);if(/ocupado|passou|indispon/i.test(e.message)){V.bk.hora=null;loadPub().then(render).catch(()=>{})}}}
-const go=t=>{V.tab=t;render()};
+const go=t=>{V.tab=t;V.draft=null;render()};
 const sair=()=>sb.auth.signOut();
 const entrar=(r,id)=>{V.role=r;V.uid=+id||0;const h=location.hash.slice(1),ok=({dono:ND,barb:NB}[r]).some(i=>i[0]==h);V.tab=ok?h:{dono:'painel',barb:'painel'}[r];V.dia=0;V.bk={};render()};
 
 /* ===== Link de agendamento ===== */
 const lk=id=>location.href.split('#')[0]+'#agendar/'+S.uid+(id?'/'+id:'');
 function copiar(id){const l=lk(id);(navigator.clipboard?navigator.clipboard.writeText(l):Promise.reject()).then(()=>toast('Link copiado')).catch(()=>toast('Copie o link: '+l))}
-const msg=id=>id?`${bn(id).nome}, este é o seu link de agendamento na ${S.nome}: ${lk(id)}`:`Agende seu horário na ${S.nome}: ${lk(0)}`;
+const MSGB='{barbeiro}, este é o seu link de agendamento na {barbearia}: {link}',MSGG='Agende seu horário na {barbearia}: {link}';
+const msg=id=>{let t=(id?S.cfg.msgb||MSGB:S.cfg.msgg||MSGG).replace(/\{barbeiro\}/g,id?bn(id).nome:'').replace(/\{barbearia\}/g,S.nome);
+ return/\{link\}/.test(t)?t.replace(/\{link\}/g,lk(id)):t+' '+lk(id)};
 function zap(id){const t=msg(id),g=S.cfg.grupo;try{navigator.clipboard&&navigator.clipboard.writeText(t)}catch(e){}
- if(g){window.open(g,'_blank','noopener');toast('Mensagem copiada: cole no grupo')}else{window.open(waUrl('',t),'_blank','noopener');toast('Dica: configure o link do grupo em Ajustes')}}
+ if(g){window.open(g,'_blank','noopener');toast('Mensagem copiada: cole no grupo')}else{window.open(waUrl('',t),'_blank','noopener');toast('Dica: configure o link do grupo em Configurações')}}
+const DRAFT=['c_nome','c_grupo','c_msgb','c_msgg','c_boas'];
+function setCfg(k,v){V.draft={};DRAFT.forEach(i=>{const e=$('#'+i);if(e)V.draft[i]=e.value});S.cfg[k]=v;save();render()}
 function salvarCfg(){const n=$('#c_nome').value.trim(),g=$('#c_grupo').value.trim();
  if(g&&!/^https:\/\/chat\.whatsapp\.com\/[\w-]+/.test(g))return toast('Link inválido. Use o link de convite do grupo (chat.whatsapp.com/...)');
- S.nome=n||'FADE';S.cfg.grupo=g;save();toast('Configurações salvas');render()}
+ S.nome=n||'FADE';Object.assign(S.cfg,{grupo:g,msgb:$('#c_msgb').value.trim(),msgg:$('#c_msgg').value.trim(),boas:$('#c_boas').value.trim().slice(0,160)});V.draft=null;save();toast('Configurações salvas');render()}
+function fotoCfg(inp){const f=inp.files[0];if(!f)return;const im=new Image(),u=URL.createObjectURL(f);
+ im.onload=()=>{const c=document.createElement('canvas'),n=256,m=Math.min(im.width,im.height);c.width=c.height=n;c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,n,n);URL.revokeObjectURL(u);setCfg('logo',c.toDataURL('image/jpeg',.82))};
+ im.onerror=()=>toast('Não foi possível ler essa imagem');im.src=u}
 const linkCard=id=>`<div class="card" style="margin-bottom:12px"><h3>Link de agendamento${id?'':' da barbearia'}</h3><p class="hint">Envie aos clientes: eles marcam sozinhos nos horários livres, sem criar conta.</p><small class="hint" style="word-break:break-all;display:block">${esc(lk(id))}</small><div class="acts" style="justify-content:flex-start"><button class="btn p s" onclick="copiar(${id})">Copiar link</button><button class="btn s" onclick="zap(${id})">Enviar no WhatsApp</button></div></div>`;
 
 /* ===== Blocos reutilizados (dono e barbeiro) ===== */
@@ -264,12 +289,27 @@ cli(){return`<div class="top"><h1>Clientes</h1><button class="btn p" onclick="no
 barb(){return`<div class="top"><h1>Barbeiros</h1><button class="btn p" onclick="novoBarb()">Novo barbeiro</button></div><div class="card"><div class="wrap"><table><tr><th>Nome</th><th>WhatsApp</th><th>Hoje</th><th>Faturado no mês</th><th></th></tr>${S.barb.map(b=>`<tr><td><b>${esc(b.nome)}</b></td><td><a href="${waUrl(b.tel)}" target="_blank" rel="noopener" style="color:var(--pr)">${esc(b.tel||'—')}</a></td><td>${agDia(K(D(0)),S.ag.filter(a=>a.barb==b.id&&a.st!='ca')).length}</td><td>${brl(fatServ(b.id))}</td><td style="white-space:nowrap"><button class="btn s" onclick="copiar(${b.id})">Copiar link</button> <button class="btn s p" onclick="zap(${b.id})">Enviar no WhatsApp</button> <button class="btn s d" onclick="remover('barb',${b.id},'${esc(b.nome).replace(/'/g,'')}')">×</button></td></tr>`).join('')}</table></div></div>`},
 serv(){return`<div class="top"><h1>Cortes e serviços</h1><button class="btn p" onclick="novoServ()">Novo serviço</button></div><div class="card">${S.serv.map(s=>`<div class="row"><div><b>${esc(s.nome)}</b><br><small class="hint" style="margin:0">${s.dur} min</small></div><span style="display:flex;gap:8px;align-items:center"><b>${brl(s.preco)}</b><button class="btn s d" onclick="remover('serv',${s.id},'${esc(s.nome).replace(/'/g,'')}')">×</button></span></div>`).join('')||'<p class="hint">Nenhum serviço.</p>'}</div>`},
 plan(){return`<div class="top"><h1>Mensalidades</h1><button class="btn p" onclick="novoPlan()">Novo plano</button></div><p class="hint">Cliente com plano em dia não paga os atendimentos avulsos: o valor entra pela mensalidade.</p><div class="kpis">${S.plan.map(p=>`<div class="card kpi"><small>${esc(p.nome)}</small><b>${brl(p.preco)}<small style="display:inline"> /mês</small></b><small>${esc(p.descr||'')}</small><small style="margin:6px 0">${S.cli.filter(c=>c.plano==p.id&&planOk(c)).length} assinante(s)</small><button class="btn s d" onclick="remover('plan',${p.id},'${esc(p.nome).replace(/'/g,'')}')">Remover</button></div>`).join('')||'<p class="hint">Nenhum plano.</p>'}</div>`},
-config(){const g=S.cfg.grupo;return`<div class="top"><h1>Configurações</h1></div>
- <div class="card" style="max-width:560px"><h3>Barbearia</h3><label class="fl"><small>Nome da barbearia</small><input id="c_nome" value="${esc(S.nome)}"></label>
- <h3>WhatsApp</h3><label class="fl"><small>Link do grupo dos barbeiros</small><input id="c_grupo" type="url" inputmode="url" placeholder="https://chat.whatsapp.com/..." value="${esc(g)}"></label>
- <p class="hint">No WhatsApp: abra o grupo, toque no nome dele, depois em Convidar via link e copie. Os botões "Enviar no WhatsApp" passam a abrir esse grupo direto. O WhatsApp não aceita texto pronto em grupo, então o app copia a mensagem e você só cola.</p>
- <div class="acts" style="justify-content:flex-start"><button class="btn p" onclick="salvarCfg()">Salvar</button>${g?`<a class="btn" href="${esc(g)}" target="_blank" rel="noopener">Testar link do grupo</a>`:''}</div></div>
- <div class="card" style="max-width:560px;margin-top:12px"><h3>Conta</h3><p class="hint" style="margin:0">Conectado como <b>${esc(S.email||'')}</b>. Cada barbearia vê apenas os próprios dados.</p></div>`},
+config(){const c=S.cfg,dv=(i,d)=>V.draft&&i in V.draft?V.draft[i]:d,hx=/^#[0-9a-f]{6}$/i,
+ T=[['auto','Automático'],['light','Claro'],['dark','Escuro']],
+ P=[['','Verde-azulado'],['#1d4ed8','Azul'],['#7c3aed','Roxo'],['#9f1239','Vinho'],['#c2410c','Laranja'],['#a16207','Dourado'],['#374151','Grafite']],
+ N=[['','Azul-marinho'],['#0a0a0a','Preto'],['#1f2937','Grafite'],['#1e1b4b','Índigo'],['#052e2b','Verde-escuro'],['#3b0a1a','Vinho']],
+ sw=(k,l,v)=>l.map(x=>`<button class="sw ${(c[k]||'')==x[0]?'on':''}" style="background:${x[0]||v}" title="${x[1]}" aria-label="${x[1]}" onclick="setCfg('${k}','${x[0]}')"></button>`).join(''),g=dv('c_grupo',c.grupo),W='style="max-width:560px;margin-bottom:12px"';
+ return`<div class="top"><h1>Configurações</h1></div>
+ <div class="card" ${W}><h3>Aparência</h3><small class="hint">As mudanças de tema e cor valem na hora.</small>
+ <div class="chips" style="margin-top:8px">${T.map(x=>`<button class="chip ${(c.tema||'auto')==x[0]?'on':''}" onclick="setCfg('tema','${x[0]}')">${x[1]}</button>`).join('')}</div>
+ <small class="hint">Cor do sistema</small><div class="chips" style="align-items:center">${sw('cor',P,'#0f766e')}<input type="color" value="${hx.test(c.cor)?c.cor:'#0f766e'}" onchange="setCfg('cor',this.value)" title="Cor personalizada" aria-label="Cor personalizada"></div>
+ <small class="hint">Cor do menu</small><div class="chips" style="margin:0">${sw('cormenu',N,'#0b1220')}</div></div>
+ <div class="card" ${W}><h3>Identidade</h3><div style="display:flex;gap:14px;align-items:center;margin-bottom:12px"><div class="ph">${ico(c,32)}</div>
+ <div><label class="btn s p">Escolher foto<input type="file" accept="image/*" hidden onchange="fotoCfg(this)"></label>${logoOk(c.logo)?` <button class="btn s d" onclick="setCfg('logo','')">Remover</button>`:''}<p class="hint" style="margin:6px 0 0">Aparece no menu e na página de agendamento dos clientes.</p></div></div>
+ <label class="fl"><small>Nome da barbearia</small><input id="c_nome" value="${esc(dv('c_nome',S.nome))}"></label>
+ <label class="fl"><small>Mensagem de boas-vindas na página de agendamento (opcional)</small><input id="c_boas" maxlength="160" value="${esc(dv('c_boas',c.boas))}" placeholder="Ex.: Atendemos de terça a sábado. Chegue 5 min antes."></label></div>
+ <div class="card" ${W}><h3>WhatsApp</h3><label class="fl"><small>Link do grupo dos barbeiros</small><input id="c_grupo" type="url" inputmode="url" placeholder="https://chat.whatsapp.com/..." value="${esc(g)}"></label>
+ <p class="hint">No WhatsApp: toque no nome do grupo, depois em Convidar via link e copie. Os botões "Enviar no WhatsApp" abrem esse grupo direto. O WhatsApp não aceita texto pronto em grupo, então o app copia a mensagem e você só cola.</p>
+ <label class="fl"><small>Mensagem para o barbeiro (link individual)</small><textarea id="c_msgb" rows="3" placeholder="${esc(MSGB)}">${esc(dv('c_msgb',c.msgb))}</textarea></label>
+ <label class="fl"><small>Mensagem do link geral</small><textarea id="c_msgg" rows="3" placeholder="${esc(MSGG)}">${esc(dv('c_msgg',c.msgg))}</textarea></label>
+ <p class="hint">Use {barbeiro}, {barbearia} e {link}. Em branco, vale a mensagem padrão (a do exemplo).</p>
+ <div class="acts" style="justify-content:flex-start"><button class="btn p" onclick="salvarCfg()">Salvar alterações</button>${c.grupo?`<a class="btn" href="${esc(c.grupo)}" target="_blank" rel="noopener">Testar grupo</a>`:''}</div></div>
+ <div class="card" ${W}><h3>Conta</h3><p class="hint" style="margin:0">Conectado como <b>${esc(S.email||'')}</b>. Cada barbearia vê apenas os próprios dados.</p></div>`},
 rel(){const w=[0,0,0,0,0,0,0],q={};let tot=0;S.ag.filter(a=>a.st=='ok'&&a.data>=K(D(-27))).forEach(a=>{w[new Date(a.data+'T00:00').getDay()]++;q[a.serv]=(q[a.serv]||0)+1;tot++});
  const rk=S.serv.map(s=>[s.nome,q[s.id]||0]).sort((a,b)=>b[1]-a[1]),mx=Math.max(...rk.map(r=>r[1]),1);
  return`<div class="top"><h1>Relatórios</h1><span class="hint" style="margin:0">últimos 28 dias</span></div>
@@ -280,9 +320,9 @@ rel(){const w=[0,0,0,0,0,0,0],q={};let tot=0;S.ag.filter(a=>a.st=='ok'&&a.data>=
 };
 
 /* ===== Página pública de agendamento (link enviado aos clientes, sem login) ===== */
-function pub(){if(V.pubLoad)return'<div class="pgw"><div class="pg"><p class="hint">Carregando…</p></div></div>';if(V.pubErr)return`<div class="pgw"><div class="pg"><div class="card"><h3>Não foi possível abrir o agendamento</h3><p class="hint" style="margin:0">${esc(V.pubErr)}</p></div></div></div>`;const b=V.bk,k=K(D(b.dia??0)),s=b.serv&&sv(b.serv),a=b.done,hd=`<div class="brandp"><i style="color:#fff">${CUT(18)}</i>${esc(S.nome)}</div>`,n=V.fixB?1:0;
+function pub(){if(V.pubLoad)return'<div class="pgw"><div class="pg"><p class="hint">Carregando…</p></div></div>';if(V.pubErr)return`<div class="pgw"><div class="pg"><div class="card"><h3>Não foi possível abrir o agendamento</h3><p class="hint" style="margin:0">${esc(V.pubErr)}</p></div></div></div>`;const b=V.bk,k=K(D(b.dia??0)),s=b.serv&&sv(b.serv),a=b.done,hd=`<div class="brandp"><i style="color:#fff">${ico(V.pubCfg||{},18)}</i>${esc(S.nome)}</div>`,n=V.fixB?1:0;
  if(a)return`<div class="pgw"><div class="pg">${hd}<div class="card" style="text-align:center"><span class="tag" style="font-size:13px;padding:4px 14px">Horário confirmado</span><h1 style="margin:14px 0 6px">${DAYS[new Date(a.data+'T00:00').getDay()]}, ${fd(a.data)} às ${a.hora}</h1><p class="hint">${esc(sv(a.serv).nome)} com ${esc(bn(a.barb).nome)}</p><a class="btn p g" target="_blank" rel="noopener" href="${waUrl(bn(a.barb).tel,'Olá! Agendei '+sv(a.serv).nome+' para '+fd(a.data)+' às '+a.hora+'.')}">Avisar o barbeiro no WhatsApp</a><button class="btn g" style="margin-top:8px" onclick="V.bk={barb:V.fixB||undefined};render()">Agendar outro horário</button></div></div></div>`;
- return`<div class="pgw"><div class="pg">${hd}<h1 style="margin-bottom:4px">Agende seu horário</h1><p class="hint">${V.fixB?'Com '+esc(bn(V.fixB).nome)+'. ':''}Escolha o serviço, o dia e um horário livre.</p>
+ return`<div class="pgw"><div class="pg">${hd}<h1 style="margin-bottom:4px">Agende seu horário</h1><p class="hint">${V.pubCfg?.boas?esc(V.pubCfg.boas)+' ':''}${V.fixB?'Com '+esc(bn(V.fixB).nome)+'. ':''}Escolha o serviço, o dia e um horário livre.</p>
  <div class="card"><h3>1. Serviço</h3><div class="chips">${S.serv.map(x=>`<button class="chip ${b.serv==x.id?'on':''}" onclick="bk('serv',${x.id})">${esc(x.nome)} · ${brl(x.preco)}</button>`).join('')}</div>
  ${V.fixB?'':`<h3>2. Barbeiro</h3><div class="chips">${S.barb.map(x=>`<button class="chip ${b.barb==x.id?'on':''}" onclick="bk('barb',${x.id})">${esc(x.nome)}</button>`).join('')}</div>`}
  <h3>${2+(1-n)}. Dia</h3><div class="chips">${[...Array(14).keys()].map(i=>`<button class="chip ${(b.dia??0)==i?'on':''}" onclick="bk('dia',${i})">${i==0?'Hoje':DS[D(i).getDay()]+' '+fd(K(D(i)))}</button>`).join('')}</div>
@@ -296,7 +336,7 @@ function pub(){if(V.pubLoad)return'<div class="pgw"><div class="pg"><p class="hi
  <button class="btn p g" onclick="confirmarBk()">Confirmar agendamento</button></div></div></div>`}
 
 /* ===== Estrutura ===== */
-const ND=[['painel','Visão geral','home'],['agenda','Agenda','cal'],['barb','Barbeiros','users'],['cli','Clientes','face'],['serv','Cortes','cut'],['plan','Planos','tag'],['rel','Relatórios','chart'],['config','Ajustes','cog']];
+const ND=[['painel','Visão geral','home'],['agenda','Agenda','cal'],['barb','Barbeiros','users'],['cli','Clientes','face'],['serv','Cortes','cut'],['plan','Planos','tag'],['rel','Relatórios','chart'],['config','Configurações','cog','Config.']];
 const NB=[['painel','Meu dia','home'],['agenda','Agenda','cal'],['cli','Clientes','face']];
 function login(){return`<div class="lg"><div class="box"><div class="tile" style="color:#fff">${CUT(50)}</div><h2>FADE</h2><p>Agenda, cortes e mensalidade da sua barbearia</p>
  <input id="le" type="email" placeholder="E-mail" autocomplete="username"><input id="lp" type="password" placeholder="Senha" autocomplete="current-password" onkeydown="if(event.key=='Enter')entrarEmail()">
@@ -304,11 +344,11 @@ function login(){return`<div class="lg"><div class="box"><div class="tile" style
  <button class="btn o" onclick="criarConta()">Criar conta da barbearia</button>
  <button class="btn o" style="background:none;font-size:13px;padding:8px;color:#94a3b8" onclick="esqueci()">Esqueci a senha</button></div></div>`}
 function shell(items,body){const u=V.role=='dono'?'Dono':bn(V.uid).nome,rl={dono:'Barbearia',barb:'Barbeiro'}[V.role];
- return`<div class="app"><nav><div class="brand"><i style="color:#fff">${CUT(18)}</i>FADE</div><div class="lb">${rl}</div>
- ${items.map(i=>`<button class="${V.tab==i[0]?'on':''}" onclick="go('${i[0]}')">${ic(i[2])}<span>${i[1]}</span></button>`).join('')}
+ return`<div class="app"><nav><div class="brand"><i style="color:#fff">${ico(S.cfg,18)}</i><span>${esc(S.nome)}</span></div><div class="lb">${rl}</div>
+ ${items.map(i=>`<button class="${V.tab==i[0]?'on':''}" onclick="go('${i[0]}')">${ic(i[2])}${i[3]?`<span class="dsk">${i[1]}</span><span class="mob">${i[3]}</span>`:`<span>${i[1]}</span>`}</button>`).join('')}
  <div class="sp"></div><div class="usr"><b>${esc(u[0])}</b><div>${esc(u.split(' ')[0])}<small>${rl}</small></div></div>
  <button class="lgo" onclick="sair()">${ic('out',18)}<span>Sair</span></button></nav><main>${body}</main></div>`}
-function render(){const el=$('#app');if(V.role=='pub'){el.innerHTML=pub();return}if(!V.role){el.innerHTML=login();return}
+function render(){applyTheme(V.role=='pub'?(V.pubCfg||{}):V.role?S.cfg:{});const el=$('#app');if(V.role=='pub'){el.innerHTML=pub();return}if(!V.role){el.innerHTML=login();return}
  const R={dono:[ND,PV],barb:[NB,PV]}[V.role];el.innerHTML=shell(R[0],R[1][V.tab]())+mdl()}
 function route(){const m=location.hash.match(/^#agendar\/([0-9a-f-]{36})(?:\/(\d+))?$/);
  if(m){V.role='pub';V.shop=m[1];V.bk={};V.pubLoad=true;V.pubErr='';render();
@@ -316,6 +356,7 @@ function route(){const m=location.hash.match(/^#agendar\/([0-9a-f-]{36})(?:\/(\d
  else if(V.role=='pub'){V.role=null;render();sb&&sb.auth.getSession().then(r=>r.data.session&&sessao(r.data.session))}
  else render()}
 addEventListener('hashchange',route);route();
+try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>render())}catch(e){}
 if(sb){sb.auth.onAuthStateChange((ev,ses)=>{setTimeout(()=>{
  if(ev=='SIGNED_OUT')sessao(null);
  else if(V.role!='pub'&&V.role!='dono'&&(ev=='INITIAL_SESSION'||ev=='SIGNED_IN'||ev=='PASSWORD_RECOVERY')&&ses)sessao(ses).then(()=>{if(ev=='PASSWORD_RECOVERY')form('Defina uma nova senha',[{id:'p',l:'Nova senha (mín. 6 caracteres)',ty:'password'}],v=>{if(v.p.length<6)return toast('Mínimo de 6 caracteres')&&false;sb.auth.updateUser({password:v.p}).then(r=>toast(r.error?erroAuth(r.error.message):'Senha atualizada'))},'Salvar')})},0)});
