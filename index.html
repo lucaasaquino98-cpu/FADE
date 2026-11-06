@@ -68,7 +68,7 @@ th{color:var(--mu);font-weight:600;font-size:12px}.wrap{overflow-x:auto}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:9;display:none}
 .lg{min-height:100dvh;display:grid;place-items:center;padding:20px;background:radial-gradient(60% 48% at 50% 38%,rgba(20,184,166,.22),transparent 72%),#0b1220;color:#fff}
 .lg .box{width:100%;max-width:380px;text-align:center}
-.tile{width:88px;height:88px;border-radius:26px;background:linear-gradient(135deg,#14b8a6,#0f766e);display:grid;place-items:center;margin:0 auto;box-shadow:0 18px 50px rgba(20,184,166,.35),inset 0 1px 0 rgba(255,255,255,.25);animation:pop .55s cubic-bezier(.34,1.56,.64,1) both}
+.tile{width:88px;height:88px;border-radius:26px;background:linear-gradient(135deg,#14b8a6,#0f766e);display:grid;place-items:center;margin:0 auto;box-shadow:0 18px 50px rgba(20,184,166,.35),inset 0 1px 0 rgba(255,255,255,.25)}
 .lg h2{font-size:28px;font-weight:800;letter-spacing:.2em;margin:20px 0 4px}
 .lg p{color:#94a3b8;margin:0 0 22px}
 .lg .btn{width:100%;margin-top:10px;padding:14px;font-size:15px;background:#14b8a6;color:#04201c;border:0}
@@ -79,11 +79,21 @@ th{color:var(--mu);font-weight:600;font-size:12px}.wrap{overflow-x:auto}
 /* tesoura cortando: lâminas giram em torno do eixo e fecham 3 vezes */
 .sa,.sb{transform-box:view-box;transform-origin:13.4px 12px}
 .sa{--s:1}.sb{--s:-1}
-.tile .sa,.tile .sb{animation:sn 1.4s ease-in-out .6s both}
-.brand i:hover .sa,.brand i:hover .sb{animation:sn 1.4s ease-in-out}
+#splash{position:fixed;inset:0;z-index:20;background:radial-gradient(60% 48% at 50% 40%,rgba(20,184,166,.22),transparent 72%),#0b1220;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .4s}
+#splash.out{opacity:0;pointer-events:none}
+#splash h2{font-size:28px;font-weight:800;letter-spacing:.2em;margin:20px 0 0;padding-left:.2em}
+#splash .tile{animation:pop .55s cubic-bezier(.34,1.56,.64,1) both}
+#splash .sa,#splash .sb{animation:sn 1.4s ease-in-out .15s both}
+.ld{width:170px;height:5px;border-radius:99px;background:rgba(255,255,255,.12);margin-top:26px;overflow:hidden}
+.ld i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#14b8a6,#5eead4);animation:ld 1.7s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes ld{to{width:100%}}
+.pgw{height:100dvh;overflow:auto}
+.pg{max-width:560px;margin:0 auto;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+.brandp{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.08em;margin:4px 0 16px}
+.brandp i{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#14b8a6,#0f766e);display:grid;place-items:center}
 @keyframes sn{0%,100%{transform:rotate(0)}14%{transform:rotate(calc(var(--s)*-28deg))}30%{transform:rotate(calc(var(--s)*9deg))}46%{transform:rotate(calc(var(--s)*-28deg))}62%{transform:rotate(calc(var(--s)*9deg))}78%{transform:rotate(calc(var(--s)*-28deg))}}
 @keyframes pop{0%{transform:scale(.6) rotate(-12deg);opacity:0}100%{transform:none;opacity:1}}
-@media (prefers-reduced-motion:reduce){.tile,.tile .sa,.tile .sb{animation:none!important}}
+@media (prefers-reduced-motion:reduce){#splash .tile,#splash .sa,#splash .sb,#splash .ld i{animation:none!important}#splash .ld i{width:100%}}
 @media (max-width:760px){
 .app{flex-direction:column-reverse}
 nav{width:auto;flex-direction:row;padding:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));justify-content:space-around;gap:0}
@@ -94,6 +104,7 @@ main{padding:12px;padding-top:calc(12px + env(safe-area-inset-top,0px))}.two{gri
 </style>
 </head>
 <body>
+<div id="splash"></div>
 <div id="app"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <script>
@@ -123,7 +134,6 @@ chart:'<path d="M4 20V11M10 20V4M16 20v-8M22 20H2"/>',
 out:'<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>',
 face:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>'};
 const CUT=s=>`<svg viewBox="0 0 24 24" style="width:${s}px;height:${s}px;overflow:visible"><g class="sb"><circle cx="6" cy="18" r="3"/><path d="M8.6 16.4L20 6"/></g><g class="sa"><circle cx="6" cy="6" r="3"/><path d="M8.6 7.6L20 18"/></g></svg>`;
-const snip=t=>t.querySelectorAll('.sa,.sb').forEach(x=>{x.style.animation='none';x.getBoundingClientRect();x.style.animation='sn 1.4s ease-in-out both'});
 const ic=(n,s=20)=>`<svg viewBox="0 0 24 24" style="width:${s}px;height:${s}px">${I[n]}</svg>`;
 
 /* ===== Estado ===== */
@@ -180,12 +190,20 @@ function novoAg(){const bs=V.role=='barb'?S.barb.filter(b=>b.id==V.uid):S.barb;
   if(!free(+v.b,k,v.h,sv(+v.s).dur))return toast('Horário indisponível para esse barbeiro')&&false;
   S.ag.push({id:nid(),cli:+v.c,barb:+v.b,serv:+v.s,data:k,hora:v.h,st:'ag'});toast('Horário agendado')})}
 function bk(k,v){V.bk[k]=v;if(k!='hora')V.bk.hora=null;render()}
-function confirmarBk(){const b=V.bk,s=sv(b.serv),k=K(D(b.dia??0));if(!b.serv||!b.barb||!b.hora)return toast('Escolha serviço, barbeiro e horário');
- if(!free(b.barb,k,b.hora,s.dur)){V.bk.hora=null;render();return toast('Esse horário acabou de ser ocupado')}
- S.ag.push({id:nid(),cli:V.uid,barb:b.barb,serv:b.serv,data:k,hora:b.hora,st:'ag'});V.bk={};save();V.tab='meus';render();toast('Horário confirmado!')}
+function confirmarBk(){const b=V.bk,k=K(D(b.dia??0)),d=(b.tel||'').replace(/\D/g,'');
+ if(!b.serv||!b.barb||!b.hora)return toast('Escolha serviço, barbeiro e horário');
+ if((b.nome||'').trim().length<2||d.length<10)return toast('Informe seu nome e WhatsApp com DDD');
+ if(!free(b.barb,k,b.hora,sv(b.serv).dur)){V.bk.hora=null;render();return toast('Esse horário acabou de ser ocupado')}
+ let c=S.cli.find(x=>String(x.tel||'').replace(/\D/g,'')==d);if(!c){c={id:nid(),nome:b.nome.trim(),tel:d,plano:null,venc:''};S.cli.push(c)}
+ const a={id:nid(),cli:c.id,barb:b.barb,serv:b.serv,data:k,hora:b.hora,st:'ag'};S.ag.push(a);save();V.bk={barb:V.fixB||undefined,done:a};render();$('.pgw')?.scrollTo?.(0,0)}
 const go=t=>{V.tab=t;render()};
 const sair=()=>{V.role=null;render()};
-const entrar=(r,id)=>{V.role=r;V.uid=+id||0;const h=location.hash.slice(1),ok=({dono:ND,barb:NB,cli:NC}[r]).some(i=>i[0]==h);V.tab=ok?h:{dono:'painel',barb:'painel',cli:'agendar'}[r];V.dia=0;V.bk={};render()};
+const entrar=(r,id)=>{V.role=r;V.uid=+id||0;const h=location.hash.slice(1),ok=({dono:ND,barb:NB}[r]).some(i=>i[0]==h);V.tab=ok?h:{dono:'painel',barb:'painel'}[r];V.dia=0;V.bk={};render()};
+
+/* ===== Link de agendamento ===== */
+const lk=id=>location.href.split('#')[0]+'#agendar'+(id?'-'+id:'');
+function copiar(id){const l=lk(id);(navigator.clipboard?navigator.clipboard.writeText(l):Promise.reject()).then(()=>toast('Link copiado')).catch(()=>toast('Copie o link: '+l))}
+const linkCard=id=>`<div class="card" style="margin-bottom:12px"><h3>Link de agendamento${id?'':' da barbearia'}</h3><p class="hint">Envie aos clientes: eles marcam sozinhos nos horários livres, sem criar conta.</p><small class="hint" style="word-break:break-all;display:block">${esc(lk(id))}</small><div class="acts" style="justify-content:flex-start"><button class="btn p s" onclick="copiar(${id})">Copiar link</button><a class="btn s" target="_blank" rel="noopener" href="${waUrl('','Agende seu horário na FADE: '+lk(id))}">Enviar no WhatsApp</a></div></div>`;
 
 /* ===== Blocos reutilizados (dono e barbeiro) ===== */
 const agRow=a=>`<div class="row"><div style="display:flex;gap:12px;align-items:center;min-width:0"><span class="hr">${a.hora}</span><div><b>${esc(cn(a.cli).nome)}</b><br><small class="hint" style="margin:0">${esc(sv(a.serv).nome)}${V.role=='dono'?' · '+esc(bn(a.barb).nome):''}</small></div></div><span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">${stTag(a)}${a.st=='ag'?`<button class="btn s p" onclick="setSt(${a.id},'ok')">Concluir</button><button class="btn s d" onclick="setSt(${a.id},'ca')">Cancelar</button>`:''}</span></div>`;
@@ -196,13 +214,13 @@ const dayChips=()=>`<div class="chips">${[0,1,2,3,4,5,6].map(i=>`<button class="
 const PV={
 painel(){const t=K(D(0)),hj=agDia(t),pend=hj.filter(a=>a.st=='ag'),dono=V.role=='dono',venc=S.cli.filter(c=>c.plano&&dv(c)<=7);
  return`<div class="top"><h1>${dono?'Visão geral':'Meu dia'}</h1><span class="hint" style="margin:0">${DAYS[new Date().getDay()]}, ${fd(t)}</span></div>
- <div class="kpis">${kpi('Horários hoje',hj.filter(a=>a.st!='ca').length,pend.length+' a atender')}${dono?kpi('Faturamento do mês',brl(fatServ()+fatPlan()),'serviços + mensalidades'):kpi('Atendidos no mês',S.ag.filter(a=>a.barb==V.uid&&a.st=='ok'&&a.data.slice(0,7)==mesK()).length)}${kpi('Assinantes ativos',S.cli.filter(planOk).length)}${kpi('Mensalidades a vencer',venc.length,'em até 7 dias')}</div>
+ ${linkCard(dono?0:V.uid)}<div class="kpis">${kpi('Horários hoje',hj.filter(a=>a.st!='ca').length,pend.length+' a atender')}${dono?kpi('Faturamento do mês',brl(fatServ()+fatPlan()),'serviços + mensalidades'):kpi('Atendidos no mês',S.ag.filter(a=>a.barb==V.uid&&a.st=='ok'&&a.data.slice(0,7)==mesK()).length)}${kpi('Assinantes ativos',S.cli.filter(planOk).length)}${kpi('Mensalidades a vencer',venc.length,'em até 7 dias')}</div>
  <div class="two"><div class="card"><h3>Agenda de hoje</h3>${hj.map(agRow).join('')||'<p class="hint">Nenhum horário hoje.</p>'}</div>
  <div class="card"><h3>Atenção · mensalidades</h3>${venc.map(c=>`<div class="row"><span>${esc(c.nome)}</span>${planTag(c)}</div>`).join('')||'<p class="hint">Tudo em dia.</p>'}</div></div>`},
 agenda(){const l=agDia(K(D(V.dia)));
  return`<div class="top"><h1>Agenda</h1><button class="btn p" onclick="novoAg()">Novo horário</button></div>${dayChips()}<div class="card"><h3>${V.dia==0?'Hoje':DAYS[D(V.dia).getDay()]} · ${l.filter(a=>a.st!='ca').length} horário(s)</h3>${l.map(agRow).join('')||'<p class="hint">Dia livre. Toque em "Novo horário".</p>'}</div>`},
 cli(){return`<div class="top"><h1>Clientes</h1><button class="btn p" onclick="novoCli()">Novo cliente</button></div>${cliTable()}`},
-barb(){return`<div class="top"><h1>Barbeiros</h1><button class="btn p" onclick="novoBarb()">Novo barbeiro</button></div><div class="card"><div class="wrap"><table><tr><th>Nome</th><th>WhatsApp</th><th>Hoje</th><th>Faturado no mês</th><th></th></tr>${S.barb.map(b=>`<tr><td><b>${esc(b.nome)}</b></td><td><a href="${waUrl(b.tel)}" target="_blank" rel="noopener" style="color:var(--pr)">${esc(b.tel||'—')}</a></td><td>${agDia(K(D(0)),S.ag.filter(a=>a.barb==b.id&&a.st!='ca')).length}</td><td>${brl(fatServ(b.id))}</td><td><button class="btn s d" onclick="remover('barb',${b.id},'${esc(b.nome).replace(/'/g,'')}')">×</button></td></tr>`).join('')}</table></div></div>`},
+barb(){return`<div class="top"><h1>Barbeiros</h1><button class="btn p" onclick="novoBarb()">Novo barbeiro</button></div><div class="card"><div class="wrap"><table><tr><th>Nome</th><th>WhatsApp</th><th>Hoje</th><th>Faturado no mês</th><th></th></tr>${S.barb.map(b=>`<tr><td><b>${esc(b.nome)}</b></td><td><a href="${waUrl(b.tel)}" target="_blank" rel="noopener" style="color:var(--pr)">${esc(b.tel||'—')}</a></td><td>${agDia(K(D(0)),S.ag.filter(a=>a.barb==b.id&&a.st!='ca')).length}</td><td>${brl(fatServ(b.id))}</td><td style="white-space:nowrap"><button class="btn s" onclick="copiar(${b.id})">Copiar link</button> <button class="btn s d" onclick="remover('barb',${b.id},'${esc(b.nome).replace(/'/g,'')}')">×</button></td></tr>`).join('')}</table></div></div>`},
 serv(){return`<div class="top"><h1>Cortes e serviços</h1><button class="btn p" onclick="novoServ()">Novo serviço</button></div><div class="card">${S.serv.map(s=>`<div class="row"><div><b>${esc(s.nome)}</b><br><small class="hint" style="margin:0">${s.dur} min</small></div><span style="display:flex;gap:8px;align-items:center"><b>${brl(s.preco)}</b><button class="btn s d" onclick="remover('serv',${s.id},'${esc(s.nome).replace(/'/g,'')}')">×</button></span></div>`).join('')||'<p class="hint">Nenhum serviço.</p>'}</div>`},
 plan(){return`<div class="top"><h1>Mensalidades</h1><button class="btn p" onclick="novoPlan()">Novo plano</button></div><p class="hint">Cliente com plano em dia não paga os atendimentos avulsos: o valor entra pela mensalidade.</p><div class="kpis">${S.plan.map(p=>`<div class="card kpi"><small>${esc(p.nome)}</small><b>${brl(p.preco)}<small style="display:inline"> /mês</small></b><small>${esc(p.desc||'')}</small><small style="margin:6px 0">${S.cli.filter(c=>c.plano==p.id&&planOk(c)).length} assinante(s)</small><button class="btn s d" onclick="remover('plan',${p.id},'${esc(p.nome).replace(/'/g,'')}')">Remover</button></div>`).join('')||'<p class="hint">Nenhum plano.</p>'}</div>`},
 rel(){const w=[0,0,0,0,0,0,0],q={};let tot=0;S.ag.filter(a=>a.st=='ok'&&a.data>=K(D(-27))).forEach(a=>{w[new Date(a.data+'T00:00').getDay()]++;q[a.serv]=(q[a.serv]||0)+1;tot++});
@@ -214,41 +232,39 @@ rel(){const w=[0,0,0,0,0,0,0],q={};let tot=0;S.ag.filter(a=>a.st=='ok'&&a.data>=
  <div class="card" style="margin-top:12px"><h3>Cortes e serviços mais pedidos</h3>${rk.map(r=>`<div style="margin-bottom:8px"><div class="row" style="border:0;padding:0"><span>${esc(r[0])}</span><b>${r[1]}</b></div><div class="bar"><i style="width:${r[1]/mx*100}%"></i></div></div>`).join('')}</div>`}
 };
 
-/* ===== Telas do CLIENTE ===== */
-const SV={
-agendar(){const c=cn(V.uid),b=V.bk,k=K(D(b.dia??0)),s=b.serv&&sv(b.serv);
- return`<div class="card hero"><div style="flex:1;min-width:180px"><h1>Olá, ${esc(c.nome.split(' ')[0])}!</h1><div>${c.plano?`Plano ${esc(pn(c.plano).nome)} · ${planOk(c)?'até '+fd(c.venc):'vencido em '+fd(c.venc)}`:'Cliente avulso'}</div></div></div>
- <div class="card"><h3>1. Escolha o serviço</h3><div class="chips">${S.serv.map(x=>`<button class="chip ${b.serv==x.id?'on':''}" onclick="bk('serv',${x.id})">${esc(x.nome)} · ${planOk(c)?'incluso':brl(x.preco)}</button>`).join('')}</div>
- <h3>2. Barbeiro</h3><div class="chips">${S.barb.map(x=>`<button class="chip ${b.barb==x.id?'on':''}" onclick="bk('barb',${x.id})">${esc(x.nome)}</button>`).join('')}</div>
- <h3>3. Dia</h3><div class="chips">${[0,1,2,3,4,5,6].map(i=>`<button class="chip ${(b.dia??0)==i?'on':''}" onclick="bk('dia',${i})">${i==0?'Hoje':DS[D(i).getDay()]+' '+fd(K(D(i)))}</button>`).join('')}</div>
- <h3>4. Horário</h3>${s&&b.barb?`<div class="chips">${SL.filter(h=>free(b.barb,k,h,s.dur)).map(h=>`<button class="chip ${b.hora==h?'on':''}" onclick="bk('hora','${h}')">${h}</button>`).join('')||'<span class="hint">Sem horários livres neste dia.</span>'}</div>`:'<p class="hint">Escolha serviço e barbeiro para ver os horários.</p>'}
- <button class="btn p g" onclick="confirmarBk()">Confirmar agendamento</button></div>`},
-meus(){const c=cn(V.uid),l=S.ag.filter(a=>a.cli==V.uid).sort((a,b)=>(b.data+b.hora).localeCompare(a.data+a.hora)),h=K(D(0));
- return`<div class="top"><h1>Meus horários</h1></div>
- <div class="card" style="margin-bottom:12px"><div class="row" style="border:0"><div><h3 style="margin:0">Mensalidade</h3><small class="hint" style="margin:0">${c.plano?esc(pn(c.plano).nome)+' · '+brl(pn(c.plano).preco)+' · vence '+fd(c.venc):'Você ainda não tem plano. Fale com a barbearia.'}</small></div>${planTag(c)}</div></div>
- <div class="card"><h3>Histórico e próximos</h3>${l.map(a=>`<div class="row"><div><b>${fd(a.data)} · ${a.hora}</b><br><small class="hint" style="margin:0">${esc(sv(a.serv).nome)} · ${esc(bn(a.barb).nome)}</small></div><span style="display:flex;gap:6px;align-items:center">${stTag(a)}${a.st=='ag'&&a.data>=h?`<button class="btn s d" onclick="setSt(${a.id},'ca')">Cancelar</button>`:''}</span></div>`).join('')||'<p class="hint">Nenhum agendamento ainda.</p>'}</div>`}
-};
+/* ===== Página pública de agendamento (link enviado aos clientes, sem login) ===== */
+function pub(){const b=V.bk,k=K(D(b.dia??0)),s=b.serv&&sv(b.serv),a=b.done,hd=`<div class="brandp"><i style="color:#fff">${CUT(18)}</i>FADE</div>`,n=V.fixB?1:0;
+ if(a)return`<div class="pgw"><div class="pg">${hd}<div class="card" style="text-align:center"><span class="tag" style="font-size:13px;padding:4px 14px">Horário confirmado</span><h1 style="margin:14px 0 6px">${DAYS[new Date(a.data+'T00:00').getDay()]}, ${fd(a.data)} às ${a.hora}</h1><p class="hint">${esc(sv(a.serv).nome)} com ${esc(bn(a.barb).nome)}</p><a class="btn p g" target="_blank" rel="noopener" href="${waUrl(bn(a.barb).tel,'Olá! Agendei '+sv(a.serv).nome+' para '+fd(a.data)+' às '+a.hora+'.')}">Avisar o barbeiro no WhatsApp</a><button class="btn g" style="margin-top:8px" onclick="V.bk={barb:V.fixB||undefined};render()">Agendar outro horário</button></div></div></div>`;
+ return`<div class="pgw"><div class="pg">${hd}<h1 style="margin-bottom:4px">Agende seu horário</h1><p class="hint">${V.fixB?'Com '+esc(bn(V.fixB).nome)+'. ':''}Escolha o serviço, o dia e um horário livre.</p>
+ <div class="card"><h3>1. Serviço</h3><div class="chips">${S.serv.map(x=>`<button class="chip ${b.serv==x.id?'on':''}" onclick="bk('serv',${x.id})">${esc(x.nome)} · ${brl(x.preco)}</button>`).join('')}</div>
+ ${V.fixB?'':`<h3>2. Barbeiro</h3><div class="chips">${S.barb.map(x=>`<button class="chip ${b.barb==x.id?'on':''}" onclick="bk('barb',${x.id})">${esc(x.nome)}</button>`).join('')}</div>`}
+ <h3>${2+(1-n)}. Dia</h3><div class="chips">${[...Array(14).keys()].map(i=>`<button class="chip ${(b.dia??0)==i?'on':''}" onclick="bk('dia',${i})">${i==0?'Hoje':DS[D(i).getDay()]+' '+fd(K(D(i)))}</button>`).join('')}</div>
+ <h3>${3+(1-n)}. Horário</h3>${s&&b.barb?`<div class="chips">${SL.filter(h=>free(b.barb,k,h,s.dur)).map(h=>`<button class="chip ${b.hora==h?'on':''}" onclick="bk('hora','${h}')">${h}</button>`).join('')||'<span class="hint">Sem horários livres neste dia. Tente outro dia.</span>'}</div>`:'<p class="hint">Escolha o serviço'+(V.fixB?'':' e o barbeiro')+' para ver os horários livres.</p>'}
+ <h3>Seus dados</h3><label class="fl"><small>Nome</small><input value="${esc(b.nome||'')}" oninput="V.bk.nome=this.value" autocomplete="name"></label><label class="fl"><small>WhatsApp com DDD</small><input type="tel" inputmode="tel" value="${esc(b.tel||'')}" oninput="V.bk.tel=this.value" autocomplete="tel"></label>
+ <button class="btn p g" onclick="confirmarBk()">Confirmar agendamento</button></div></div></div>`}
 
 /* ===== Estrutura ===== */
 const ND=[['painel','Visão geral','home'],['agenda','Agenda','cal'],['barb','Barbeiros','users'],['cli','Clientes','face'],['serv','Cortes','cut'],['plan','Planos','tag'],['rel','Relatórios','chart']];
 const NB=[['painel','Meu dia','home'],['agenda','Agenda','cal'],['cli','Clientes','face']];
-const NC=[['agendar','Agendar','cut'],['meus','Meus horários','cal']];
 function login(){const o=(l)=>l.map(x=>`<option value="${x.id}">${esc(x.nome)}</option>`).join('');
- return`<div class="lg"><div class="box"><div class="tile" style="color:#fff;cursor:pointer" onclick="snip(this)" title="Toque para cortar">${CUT(50)}</div><h2>FADE</h2><p>Agenda, cortes e mensalidade da sua barbearia</p>
+ return`<div class="lg"><div class="box"><div class="tile" style="color:#fff">${CUT(50)}</div><h2>FADE</h2><p>Agenda, cortes e mensalidade da sua barbearia</p>
  <input id="le" type="email" placeholder="E-mail" autocomplete="username"><input id="lp" type="password" placeholder="Senha" autocomplete="current-password">
  <button class="btn" onclick="toast('O login real entra quando o Supabase for conectado')">Entrar</button>
  <hr><p style="margin:14px 0 0">Modo demonstração</p>
  <button class="btn o" onclick="entrar('dono')">Entrar como dono</button>
- <select id="db">${o(S.barb)}</select><button class="btn o" onclick="entrar('barb',$('#db').value)">Entrar como barbeiro</button>
- <select id="dc">${o(S.cli)}</select><button class="btn o" onclick="entrar('cli',$('#dc').value)">Entrar como cliente</button></div></div>`}
-function shell(items,body){const u=V.role=='dono'?'Dono':V.role=='barb'?bn(V.uid).nome:cn(V.uid).nome,rl={dono:'Barbearia',barb:'Barbeiro',cli:'Cliente'}[V.role];
+ <select id="db">${o(S.barb)}</select><button class="btn o" onclick="entrar('barb',$('#db').value)">Entrar como barbeiro</button></div></div>`}
+function shell(items,body){const u=V.role=='dono'?'Dono':bn(V.uid).nome,rl={dono:'Barbearia',barb:'Barbeiro'}[V.role];
  return`<div class="app"><nav><div class="brand"><i style="color:#fff">${CUT(18)}</i>FADE</div><div class="lb">${rl}</div>
  ${items.map(i=>`<button class="${V.tab==i[0]?'on':''}" onclick="go('${i[0]}')">${ic(i[2])}<span>${i[1]}</span></button>`).join('')}
  <div class="sp"></div><div class="usr"><b>${esc(u[0])}</b><div>${esc(u.split(' ')[0])}<small>${rl}</small></div></div>
  <button class="lgo" onclick="sair()">${ic('out',18)}<span>Sair</span></button></nav><main>${body}</main></div>`}
-function render(){const el=$('#app');if(!V.role){el.innerHTML=login();return}
- const R={dono:[ND,PV],barb:[NB,PV],cli:[NC,SV]}[V.role];el.innerHTML=shell(R[0],R[1][V.tab]())+mdl()}
-render();
+function render(){const el=$('#app');if(V.role=='pub'){el.innerHTML=pub();return}if(!V.role){el.innerHTML=login();return}
+ const R={dono:[ND,PV],barb:[NB,PV]}[V.role];el.innerHTML=shell(R[0],R[1][V.tab]())+mdl()}
+function route(){const m=location.hash.match(/^#agendar(?:-(\d+))?$/);
+ if(m){V.role='pub';V.fixB=m[1]&&S.barb.some(b=>b.id==m[1])?+m[1]:0;V.bk={barb:V.fixB||undefined}}else if(V.role=='pub')V.role=null;render()}
+addEventListener('hashchange',route);route();
+(()=>{const sp=$('#splash');sp.innerHTML=`<div class="tile" style="color:#fff">${CUT(50)}</div><h2>FADE</h2><div class="ld"><i></i></div>`;
+ setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),450)},matchMedia('(prefers-reduced-motion:reduce)').matches?300:1900)})();
 if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 </body>
